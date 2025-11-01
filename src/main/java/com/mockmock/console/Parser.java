@@ -22,7 +22,6 @@ public class Parser
         options.addOption("p", true, "The mail port number to use. Default is 25000.");
         options.addOption("h", true, "The http port number to use. Default is 8282.");
         options.addOption("m", true, "The maximum size of the mail qeueue. Default is 1000.");
-        options.addOption("c", true, "Comma separated list of channels. Default is #postman.");
         options.addOption("ff", true, "Filters out from email addresses (comma separated).");
         options.addOption("ft", true, "Filters out to email addresses (comma separated).");
         options.addOption("s", true, "Full path to the folder containing the static files like images and css.");
@@ -70,7 +69,7 @@ public class Parser
             }
             catch(IllegalArgumentException e)
             {
-                System.err.println("Invalid value given, using default " + settings.getShowEmailInConsole());
+                System.err.println("Invalid value given, using default " + settings.isShowEmailInConsole());
             }
         }
     }

@@ -38,7 +38,7 @@ public class HeaderHtmlBuilder implements HtmlBuilder
         else
         {
             output +=
-                "    <style>\n" + util.getFile("/css/mockmock.css") + util.getFile("/css/bootstrap.min.css") +
+                "    <style>\n" + util.getResourceContentsAsString("/css/mockmock.css") + util.getResourceContentsAsString("/css/bootstrap.min.css") +
                 "    </style>\n";
         }
 

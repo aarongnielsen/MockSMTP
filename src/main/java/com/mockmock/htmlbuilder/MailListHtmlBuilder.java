@@ -73,12 +73,24 @@ public class MailListHtmlBuilder implements HtmlBuilder
             subjectOutput = StringEscapeUtils.escapeHtml(mail.getSubject());
         }
 
+        StringBuilder attachmentStringBuilder = new StringBuilder();
+        if (mail.getBodyHtml() != null) {
+            attachmentStringBuilder.append("    <a href=\"/view/html/" + mail.getId() + "\"><em>Body HTML</em></a><br>\n");
+        }
+        for (int i = 0; i < mail.getAttachments().size(); i++) {
+            MockMail.Attachment attachment = mail.getAttachments().get(i);
+            attachmentStringBuilder.append("    <a href=\"/view/" + mail.getId() + "/attachment/" + i + "\"><em>Attachment " + i + "</em></a><br>\n");
+        }
+
         return
             "<tr>\n" +
             "  <td>" + fromOutput + "</td>\n" +
             "  <td>" + toOutput + "</td>\n" +
             "  <td><a title=\"" + StringEscapeUtils.escapeHtml(mail.getSubject()) + "\" href=\"/view/" + mail.getId() + "\">" + subjectOutput + "</a></td>\n" +
-            "  <td><a title=\"Delete this mail\" href=\"/delete/" + mail.getId() + "\"><em>Delete</em></a></td>\n" +
+            "  <td>\n" +
+                 attachmentStringBuilder +
+            "    <a title=\"Delete this mail\" href=\"/delete/" + mail.getId() + "\"><em>Delete</em></a>" +
+            "  </td>\n" +
             "</tr>";
     }
 }

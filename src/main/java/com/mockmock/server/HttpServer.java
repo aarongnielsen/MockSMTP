@@ -3,6 +3,7 @@ package com.mockmock.server;
 import com.mockmock.AppStarter;
 import com.mockmock.Settings;
 import com.mockmock.http.*;
+import lombok.Setter;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -15,6 +16,7 @@ import java.io.File;
 @Service
 public class HttpServer implements com.mockmock.server.Server
 {
+    @Setter
     private int port;
 
     private Settings settings;
@@ -23,11 +25,7 @@ public class HttpServer implements com.mockmock.server.Server
     private MailDetailHtmlHandler mailDetailHtmlHandler;
     private MailDeleteHandler mailDeleteHandler;
     private DeleteHandler deleteHandler;
-
-    public void setPort(int port)
-    {
-        this.port = port;
-    }
+    private AttachmentHandler attachmentHandler;
 
     public void start()
     {
@@ -62,6 +60,7 @@ public class HttpServer implements com.mockmock.server.Server
 			this.mailDetailHtmlHandler,
 			this.mailDeleteHandler,
 			this.deleteHandler,
+            this.attachmentHandler,
 			resourceHandler
         };
         HandlerList handlerList = new HandlerList();
@@ -103,6 +102,11 @@ public class HttpServer implements com.mockmock.server.Server
     @Autowired
     public void setDeleteHandler(DeleteHandler deleteHandler) {
         this.deleteHandler = deleteHandler;
+    }
+
+    @Autowired
+    public void setAttachmentHandler(AttachmentHandler attachmentHandler) {
+        this.attachmentHandler = attachmentHandler;
     }
 
     @Autowired

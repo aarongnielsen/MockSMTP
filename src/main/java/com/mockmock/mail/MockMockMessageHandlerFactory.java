@@ -2,7 +2,7 @@ package com.mockmock.mail;
 
 import com.google.common.eventbus.EventBus;
 import com.mockmock.Settings;
-import org.joda.time.DateTime;
+import com.mockmock.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.subethamail.smtp.MessageContext;
@@ -16,6 +16,7 @@ import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
+import java.time.Instant;
 import java.util.Properties;
 
 @Service
@@ -42,40 +43,36 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
         return new MockMockHandler(messageContext);
     }
 
-    class MockMockHandler implements MessageHandler
-    {
+    class MockMockHandler implements MessageHandler {
         MessageContext context;
         MockMail mockMail;
 
         /**
          * Constructor
+         *
          * @param context MessageContext
          */
-        public MockMockHandler(MessageContext context)
-        {
+        public MockMockHandler(MessageContext context) {
             this.context = context;
             this.mockMail = new MockMail();
 
             // give the mockmail a unique id (currently its just a timestamp in ms)
-            this.mockMail.setId(DateTime.now().getMillis());
+            this.mockMail.setId(Instant.now().toEpochMilli());
         }
 
         /**
          * Called first, after the MAIL FROM during a SMTP exchange.
+         *
          * @param from String
          * @throws RejectException
          */
         @Override
-        public void from(String from) throws RejectException
-        {
+        public void from(String from) throws RejectException {
             this.mockMail.setFrom(from);
 
-            if(settings.getShowEmailInConsole())
-            {
+            if (settings.isShowEmailInConsole()) {
                 System.out.println("FROM:" + from);
-            }
-            else
-            {
+            } else {
                 System.out.println("Email from " + from + " received.");
             }
         }
@@ -83,85 +80,86 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
         /**
          * Called once for every RCPT TO during a SMTP exchange.
          * This will occur after a from() call.
+         *
          * @param recipient String
          * @throws RejectException
          */
         @Override
-        public void recipient(String recipient) throws RejectException
-        {
+        public void recipient(String recipient) throws RejectException {
             this.mockMail.setTo(recipient);
 
-            if(settings.getShowEmailInConsole())
-            {
+            if (settings.isShowEmailInConsole()) {
                 System.out.println("RECIPIENT:" + recipient);
             }
         }
 
         /**
          * Called when the DATA part of the SMTP exchange begins.
+         *
          * @param data InputStream
          * @throws RejectException
          * @throws IOException
          */
         @Override
-        public void data(InputStream data) throws RejectException, IOException
-        {
+        public void data(InputStream data) throws RejectException, IOException {
             String rawMail = this.convertStreamToString(data);
             mockMail.setRawMail(rawMail);
 
             Session session = Session.getDefaultInstance(new Properties());
             InputStream is = new ByteArrayInputStream(rawMail.getBytes());
 
-            try
-            {
+            try {
                 MimeMessage message = new MimeMessage(session, is);
                 mockMail.setSubject(message.getSubject());
                 mockMail.setMimeMessage(message);
 
                 Object messageContent = message.getContent();
-                if(messageContent instanceof Multipart)
-                {
+                if (messageContent instanceof Multipart) {
                     Multipart multipart = (Multipart) messageContent;
-                    for (int i = 0; i < multipart.getCount(); i++)
-                    {
+                    for (int i = 0; i < multipart.getCount(); i++) {
                         BodyPart bodyPart = multipart.getBodyPart(i);
                         String contentType = bodyPart.getContentType();
-                        if(contentType.matches("text/plain.*"))
-                        {
+                        if (contentType.matches("text/plain.*")) {
                             mockMail.setBody(convertStreamToString(bodyPart.getInputStream()));
-                        }
-                        else if(contentType.matches("text/html.*"))
-                        {
+                        } else if (contentType.matches("text/html.*")) {
                             mockMail.setBodyHtml(convertStreamToString(bodyPart.getInputStream()));
+                        } else if (bodyPart.getHeader("Content-Disposition") != null) {
+                            String attachmentContentType = bodyPart.getHeader("Content-Type")[0];
+                            int indexOfSemicolon = attachmentContentType.indexOf(';');
+                            if (indexOfSemicolon != -1) {
+                                attachmentContentType = attachmentContentType.substring(0, indexOfSemicolon);
+                            }
+
+                            String contentDispositionFilename = bodyPart.getHeader("Content-Disposition")[0];
+                            int indexOfFilename = contentDispositionFilename.indexOf("filename=\"");
+                            if (indexOfFilename != -1) {
+                                contentDispositionFilename = contentDispositionFilename.substring(indexOfFilename + 10, contentDispositionFilename.length() - 1);
+                            }
+
+                            MockMail.Attachment attachment = new MockMail.Attachment();
+                            attachment.setContentType(attachmentContentType);
+                            attachment.setFilename(contentDispositionFilename);
+                            attachment.setContents(new Util().getStreamContentsAsByteArray(bodyPart.getInputStream()));
+                            mockMail.getAttachments().add(attachment);
                         }
                     }
-                }
-                else if(messageContent instanceof InputStream)
-                {
+                } else if (messageContent instanceof InputStream) {
                     InputStream mailContent = (InputStream) messageContent;
                     mockMail.setBody(convertStreamToString(mailContent));
-                }
-                else if(messageContent instanceof String)
-                {
+                } else if (messageContent instanceof String) {
                     String contentType = message.getContentType();
 
-                    if(contentType.matches("text/plain.*"))
-                    {
+                    if (contentType.matches("text/plain.*")) {
                         mockMail.setBody(messageContent.toString());
-                    }
-                    else if(contentType.matches("text/html.*"))
-                    {
+                    } else if (contentType.matches("text/html.*")) {
                         mockMail.setBodyHtml(messageContent.toString());
                     }
                 }
-            }
-            catch (MessagingException e)
-            {
+            } catch (MessagingException e) {
                 e.printStackTrace();
             }
 
-            if(settings.getShowEmailInConsole())
-            {
+            if (settings.isShowEmailInConsole()) {
                 System.out.println("MAIL DATA");
                 System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
                 System.out.println(mockMail.getRawMail());
@@ -170,27 +168,23 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
         }
 
         @Override
-        public void done()
-        {
-			// check if this email's "from" address matches one in the filtered list
-			if(settings.getFilterFromEmailAddresses().contains(mockMail.getFrom()))
-			{
-				System.out.println("Skipping email, because From address '" + mockMail.getFrom() + "' matches filter");
-				return;
-			}
+        public void done() {
+            // check if this email's "from" address matches one in the filtered list
+            if (settings.getFilterFromEmailAddresses().contains(mockMail.getFrom())) {
+                System.out.println("Skipping email, because From address '" + mockMail.getFrom() + "' matches filter");
+                return;
+            }
 
-			// check if this email's "to" address matches one in the filtered list
-			if(settings.getFilterToEmailAddresses().contains(mockMail.getTo()))
-			{
-				System.out.println("Skipping email, because To address '" + mockMail.getTo() + "' matches filter");
-				return;
-			}
+            // check if this email's "to" address matches one in the filtered list
+            if (settings.getFilterToEmailAddresses().contains(mockMail.getTo())) {
+                System.out.println("Skipping email, because To address '" + mockMail.getTo() + "' matches filter");
+                return;
+            }
 
             // set the received date
-            mockMail.setReceivedTime(DateTime.now().getMillis());
+            mockMail.setReceivedTime(Instant.now().toEpochMilli());
 
-            if(settings.getShowEmailInConsole())
-            {
+            if (settings.isShowEmailInConsole()) {
                 System.out.println("Finished");
             }
 
@@ -199,25 +193,21 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
 
         /**
          * Converts given input stream to String
+         *
          * @param is InputStream
          * @return String
          */
-        protected String convertStreamToString(InputStream is)
-        {
+        protected String convertStreamToString(InputStream is) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder stringBuilder = new StringBuilder();
 
             String line;
-            try
-            {
-                while ((line = reader.readLine()) != null)
-                {
+            try {
+                while ((line = reader.readLine()) != null) {
                     stringBuilder.append(line);
                     stringBuilder.append("\n");
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 

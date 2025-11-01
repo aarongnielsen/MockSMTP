@@ -1,6 +1,5 @@
 package com.mockmock.htmlbuilder;
 
-import com.mockmock.AppStarter;
 import com.mockmock.Settings;
 import com.mockmock.Util;
 import org.springframework.stereotype.Service;
@@ -32,9 +31,9 @@ public class FooterHtmlBuilder implements HtmlBuilder
     	else
     	{
     		output +=
-    				"  <script>\n" + util.getFile("/js/jquery-1.8.1.min.js") + "</script>\n" +
-    				"  <script>\n" + util.getFile("/js/bootstrap.min.js") + "</script>\n" +
-    				"  <script>\n" + util.getFile("/js/mockmock.js") + "</script>\n";
+    				"  <script>\n" + util.getResourceContentsAsString("/js/jquery-1.8.1.min.js") + "</script>\n" +
+    				"  <script>\n" + util.getResourceContentsAsString("/js/bootstrap.min.js") + "</script>\n" +
+    				"  <script>\n" + util.getResourceContentsAsString("/js/mockmock.js") + "</script>\n";
     	}
 
     	output +=
