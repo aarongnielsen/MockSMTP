@@ -3,6 +3,7 @@ package com.mockmock.mail;
 import com.google.common.eventbus.EventBus;
 import com.mockmock.Settings;
 import com.mockmock.Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.subethamail.smtp.MessageContext;
@@ -20,8 +21,9 @@ import java.time.Instant;
 import java.util.Properties;
 
 @Service
-public class MockMockMessageHandlerFactory implements MessageHandlerFactory
-{
+@Slf4j
+public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
+
     private EventBus eventBus;
 	private Settings settings;
 
@@ -72,8 +74,6 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
 
             if (settings.isShowEmailInConsole()) {
                 System.out.println("FROM:" + from);
-            } else {
-                System.out.println("Email from " + from + " received.");
             }
         }
 
@@ -172,18 +172,20 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
         public void done() {
             // check if this email's "from" address matches one in the filtered list
             if (settings.getFilterFromEmailAddresses().contains(mockMail.getFrom())) {
-                System.out.println("Skipping email, because From address '" + mockMail.getFrom() + "' matches filter");
+                log.warn("Skipping email because From address matches filter: {}", mockMail.getFrom());
                 return;
             }
 
             // check if this email's "to" address matches one in the filtered list
             if (settings.getFilterToEmailAddresses().contains(mockMail.getTo())) {
-                System.out.println("Skipping email, because To address '" + mockMail.getTo() + "' matches filter");
+                log.warn("Skipping email because To address matches filter: {}", mockMail.getTo());
                 return;
             }
 
             // set the received date
             mockMail.setReceivedTime(Instant.now().toEpochMilli());
+
+            log.info("Email received from {}", mockMail.getFrom());
 
             if (settings.isShowEmailInConsole()) {
                 System.out.println("Finished");

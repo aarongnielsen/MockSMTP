@@ -2,41 +2,39 @@ package com.mockmock.server;
 
 import com.mockmock.AppStarter;
 import com.mockmock.mail.MockMockMessageHandlerFactory;
+import lombok.AccessLevel;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.subethamail.smtp.server.SMTPServer;
 
 @Service
-public class SmtpServer implements Server
-{
-    private int port;
-    private MockMockMessageHandlerFactory handlerFactory;
+@Slf4j
+public class SmtpServer implements Server {
 
-    public void setPort(int port)
-    {
-        this.port = port;
-    }
+    @Setter
+    private int port;
 
     @Autowired
-    public void setHandlerFactory(MockMockMessageHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
-    }
+    @Setter
+    private MockMockMessageHandlerFactory handlerFactory;
 
-    public void start()
-    {
+    public void start() {
         // start the smtp server!
         SMTPServer server = new SMTPServer(handlerFactory);
         server.setSoftwareName("MockMock SMTP Server version " + AppStarter.VERSION_NUMBER);
         server.setPort(port);
 
-        try
-        {
-            System.out.println("Starting MockMock on port " + port);
+        try {
+            log.info("Starting MockMock on port {}", port);
             server.start();
-        }
-        catch (Exception e)
-        {
-            System.err.println("Could not start MockMock. Maybe port " + port + " is already in use?");
+        } catch (Exception x) {
+            log.info("Could not start MockMock. Maybe port {} is already in use?", port);
+            log.debug("Stacktrace:", x);
         }
     }
+
 }

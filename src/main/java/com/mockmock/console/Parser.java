@@ -2,6 +2,7 @@ package com.mockmock.console;
 
 
 import com.mockmock.Settings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 import org.springframework.stereotype.Service;
 
@@ -9,14 +10,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 @Service
+@Slf4j
 public class Parser
 {
     /**
      * Parses the given parameters and returns the possible options
      * @param args String[]
      */
-    public Settings parseOptions(String[] args, Settings settings)
-    {
+    public Settings parseOptions(String[] args, Settings settings) {
         // define the possible options
         Options options = new Options();
         options.addOption("p", true, "The mail port number to use. Default is 25000.");
@@ -31,18 +32,16 @@ public class Parser
         // parse the given arguments
         CommandLineParser parser = new PosixParser();
 
-        try
-        {
+        try {
             CommandLine cmd = parser.parse(options, args);
 
-            if(cmd.hasOption("?"))
-            {
+            if (cmd.hasOption("?")) {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp( "java -jar MockMock.jar -p 25 -h 8282", options );
                 System.exit(0);
             }
 
-            partseShowEmailInConsoleOption(cmd, settings);
+            parseShowEmailInConsoleOption(cmd, settings);
             parseSmtpPortOption(cmd, settings);
             parseHttpPortOption(cmd, settings);
             parseMailQueueSizeOption(cmd, settings);
@@ -50,99 +49,70 @@ public class Parser
 			parseFilterToEmailAddressesOption(cmd, settings);
             parseStaticFolderOption(cmd, settings);
         }
-        catch (ParseException e)
-        {
-            e.printStackTrace();
+        catch (ParseException parseX) {
+            log.error("error parsing command line arguments", parseX);
         }
 
         return settings;
     }
 
-    protected void partseShowEmailInConsoleOption(CommandLine cmd, Settings settings)
-    {
-        if(cmd.hasOption("ec"))
-        {
-            try
-            {
-                // settings.setShowEmailInConsole(Boolean.valueOf(cmd.getOptionValue("ec")));
-                settings.setShowEmailInConsole(true);
+    protected void parseShowEmailInConsoleOption(CommandLine cmd, Settings settings) {
+        if (cmd.hasOption("ec")) {
+            settings.setShowEmailInConsole(true);
+        }
+    }
+
+    protected void parseSmtpPortOption(CommandLine cmd, Settings settings) {
+        if (cmd.hasOption("p")) {
+            try {
+                settings.setSmtpPort(Integer.parseInt(cmd.getOptionValue("p")));
             }
-            catch(IllegalArgumentException e)
-            {
-                System.err.println("Invalid value given, using default " + settings.isShowEmailInConsole());
+            catch (NumberFormatException nfx) {
+                log.error("Invalid mail port {}, using default {}", cmd.getOptionValue("p"), settings.getSmtpPort());
             }
         }
     }
 
-    protected void parseSmtpPortOption(CommandLine cmd, Settings settings)
-    {
-        if(cmd.hasOption("p"))
-        {
-            try
-            {
-                settings.setSmtpPort(Integer.valueOf(cmd.getOptionValue("p")));
+    protected void parseHttpPortOption(CommandLine cmd, Settings settings) {
+        if (cmd.hasOption("h")) {
+            try {
+                settings.setHttpPort(Integer.parseInt(cmd.getOptionValue("h")));
             }
-            catch (NumberFormatException e)
-            {
-                System.err.println("Invalid mail port given, using default " + settings.getSmtpPort());
+            catch (NumberFormatException nfx) {
+                log.error("Invalid HTTP port {}, using default {}", cmd.getOptionValue("h"), settings.getHttpPort());
             }
         }
     }
 
-    protected void parseHttpPortOption(CommandLine cmd, Settings settings)
-    {
-        if(cmd.hasOption("h"))
-        {
-            try
-            {
-                settings.setHttpPort(Integer.valueOf(cmd.getOptionValue("h")));
+    protected void parseMailQueueSizeOption(CommandLine cmd, Settings settings) {
+        if (cmd.hasOption("m")) {
+            try {
+                settings.setMaxMailQueueSize(Integer.parseInt(cmd.getOptionValue("m")));
             }
-            catch (NumberFormatException e)
-            {
-                System.err.println("Invalid http port given, using default " + settings.getHttpPort());
+            catch (NumberFormatException nfx) {
+                log.error("Invalid max mail queue size {}, using default {}", cmd.getOptionValue("m"), settings.getMaxMailQueueSize());
             }
         }
     }
 
-    protected void parseMailQueueSizeOption(CommandLine cmd, Settings settings)
-    {
-        if(cmd.hasOption("m"))
-        {
-            try
-            {
-                settings.setMaxMailQueueSize(Integer.valueOf(cmd.getOptionValue("m")));
-            }
-            catch (NumberFormatException e)
-            {
-                System.err.println("Invalid max mail queue size given, using default " + settings.getMaxMailQueueSize());
-            }
-        }
-    }
-
-	protected void parseFilterFromEmailAddressesOption(CommandLine cmd, Settings settings)
-	{
-		if(cmd.hasOption("ff"))
-		{
+	protected void parseFilterFromEmailAddressesOption(CommandLine cmd, Settings settings) {
+		if (cmd.hasOption("ff")) {
 			String input = cmd.getOptionValue("ff");
 			String[] emailAddresses = input.split(",");
 			settings.setFilterFromEmailAddresses(new HashSet<>(Arrays.asList(emailAddresses)));
 		}
 	}
 
-	protected void parseFilterToEmailAddressesOption(CommandLine cmd, Settings settings)
-	{
-		if(cmd.hasOption("ft"))
-		{
+	protected void parseFilterToEmailAddressesOption(CommandLine cmd, Settings settings) {
+		if (cmd.hasOption("ft")) {
 			String input = cmd.getOptionValue("ft");
 			String[] emailAddresses = input.split(",");
 			settings.setFilterToEmailAddresses(new HashSet<>(Arrays.asList(emailAddresses)));
 		}
 	}
 
-    protected void parseStaticFolderOption(CommandLine cmd, Settings settings)
-    {
-        if(cmd.hasOption("s"))
-        {
+    protected void parseStaticFolderOption(CommandLine cmd, Settings settings) {
+        if (cmd.hasOption("s")) {
             settings.setStaticFolderPath(cmd.getOptionValue("s"));
         }
     }

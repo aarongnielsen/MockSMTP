@@ -4,18 +4,23 @@ import com.mockmock.AppStarter;
 import com.mockmock.Settings;
 import com.mockmock.http.*;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Objects;
 
 @Service
-public class HttpServer implements com.mockmock.server.Server
-{
+@Slf4j
+public class HttpServer implements com.mockmock.server.Server {
+
     @Setter
     private int port;
 
@@ -27,32 +32,23 @@ public class HttpServer implements com.mockmock.server.Server
     private DeleteHandler deleteHandler;
     private AttachmentHandler attachmentHandler;
 
-    public void start()
-    {
+    public void start() {
         Server http = new Server(port);
 
         // get the path to the "static" folder. If it doesn't exists, check if it's in the folder of the file being executed.
-        String path = "./static";
-        if(settings.getStaticFolderPath() != null)
-        {
-            path = settings.getStaticFolderPath();
+        String pathToStaticResources = (settings.getStaticFolderPath() != null ? settings.getStaticFolderPath() : "./static");
+        if (!new File(pathToStaticResources).exists()) {
+            log.info("Path to static folder does not exist: {}", pathToStaticResources);
+
+            // check inside the directory we're in
+            pathToStaticResources = AppStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            pathToStaticResources = new File(pathToStaticResources).getParent() + "/static";
         }
 
-        if( ! new File(path).exists())
-        {
-            System.out.println("Path to static folder does not exist: " + path);
-
-            // get the directory we're in
-            path = AppStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            path = new File(path).getParent() + "/static";
-
-            System.out.println("Using auto guessed folder: " + path);
-        }
-
-        System.out.println("Path to resources folder: " + path);
+        log.info("Path to static resources: {}", pathToStaticResources);
 
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase(path);
+        resourceHandler.setResourceBase(pathToStaticResources);
 
         Handler[] handlers = {
 			this.indexHandler,
@@ -67,15 +63,13 @@ public class HttpServer implements com.mockmock.server.Server
         handlerList.setHandlers(handlers);
         http.setHandler(handlerList);
 
-        try
-        {
-            System.out.println("Starting http server on port " + port);
+        try {
+            log.info("Starting http server on port {}", port);
             http.start();
             http.join();
-        }
-        catch (Exception e)
-        {
-            System.err.println("Could not start http server. Maybe port " + port + " is already in use?");
+        } catch (Exception x) {
+            log.error("Could not start http server. Maybe port {} is already in use?", port);
+            log.debug("HTTP server startup error stacktrace:", x);
         }
     }
 
