@@ -1,28 +1,25 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 
+@Setter
 @Service
 public class MailListHtmlBuilder implements HtmlBuilder
 {
     private ArrayList<MockMail> mailQueue;
-
-    public void setMailQueue(ArrayList<MockMail> mailQueue)
-    {
-        this.mailQueue = mailQueue;
-    }
 
     public String build()
     {
         String output =
                     "<div class=\"container\">\n";
 
-        if(mailQueue == null || mailQueue.size() == 0)
+        if(mailQueue == null || mailQueue.isEmpty())
         {
             output += "  <h2>No emails in queue</h2>\n";
         }

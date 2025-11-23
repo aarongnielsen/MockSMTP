@@ -102,7 +102,8 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
          */
         @Override
         public void data(InputStream data) throws RejectException, IOException {
-            String rawMail = this.convertStreamToString(data);
+            Util util = new Util();
+            String rawMail = util.getStreamContentsAsString(data);
             mockMail.setRawMail(rawMail);
 
             Session session = Session.getDefaultInstance(new Properties());
@@ -120,9 +121,9 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
                         BodyPart bodyPart = multipart.getBodyPart(i);
                         String contentType = bodyPart.getContentType();
                         if (contentType.matches("text/plain.*")) {
-                            mockMail.setBody(convertStreamToString(bodyPart.getInputStream()));
+                            mockMail.setBody(util.getStreamContentsAsString(bodyPart.getInputStream()));
                         } else if (contentType.matches("text/html.*")) {
-                            mockMail.setBodyHtml(convertStreamToString(bodyPart.getInputStream()));
+                            mockMail.setBodyHtml(util.getStreamContentsAsString(bodyPart.getInputStream()));
                         } else if (bodyPart.getHeader("Content-Disposition") != null) {
                             String attachmentContentType = bodyPart.getHeader("Content-Type")[0];
                             int indexOfSemicolon = attachmentContentType.indexOf(';');
@@ -145,7 +146,7 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
                     }
                 } else if (messageContent instanceof InputStream) {
                     InputStream mailContent = (InputStream) messageContent;
-                    mockMail.setBody(convertStreamToString(mailContent));
+                    mockMail.setBody(util.getStreamContentsAsString(mailContent));
                 } else if (messageContent instanceof String) {
                     String contentType = message.getContentType();
 
@@ -190,28 +191,6 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory
 
             eventBus.post(mockMail);
         }
-
-        /**
-         * Converts given input stream to String
-         *
-         * @param is InputStream
-         * @return String
-         */
-        protected String convertStreamToString(InputStream is) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder stringBuilder = new StringBuilder();
-
-            String line;
-            try {
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
-                    stringBuilder.append("\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return stringBuilder.toString();
-        }
     }
+
 }

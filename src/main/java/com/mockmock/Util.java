@@ -1,6 +1,7 @@
 package com.mockmock;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -12,7 +13,7 @@ public class Util {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resourceIS, StandardCharsets.UTF_8));
         String contents = bufferedReader.lines().collect(Collectors.joining("\n"));
         return contents;
-      }
+    }
 
     public byte[] getStreamContentsAsByteArray(InputStream is) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -27,6 +28,16 @@ public class Util {
             iox.printStackTrace();
         }
         return byteArrayOutputStream.toByteArray();
+    }
+
+    public String getStreamContentsAsString(InputStream is) {
+        return getStreamContentsAsString(is, StandardCharsets.UTF_8);
+    }
+
+    public String getStreamContentsAsString(InputStream is, Charset charset) {
+          byte[] streamContentsAsBytes = getStreamContentsAsByteArray(is);
+          String streamContentsAsString = new String(streamContentsAsBytes, charset);
+          return streamContentsAsString;
     }
 
 }
