@@ -1,7 +1,7 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -29,7 +29,7 @@ public class StringFromHtmlBuilder implements HtmlBuilder
                 int i = 1;
                 for(Address address : addresses)
                 {
-                    output += StringEscapeUtils.escapeHtml(address.toString());
+                    output += StringEscapeUtils.escapeHtml4(address.toString());
                     if(addresses.length != i)
                     {
                         output += ", ";
@@ -40,7 +40,7 @@ public class StringFromHtmlBuilder implements HtmlBuilder
             }
             else
             {
-                output += StringEscapeUtils.escapeHtml(mockMail.getFrom());
+                output += StringEscapeUtils.escapeHtml4(mockMail.getFrom());
             }
         }
         catch (MessagingException e)

@@ -17,7 +17,17 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
-        <spring.version>4.1.2.RELEASE</spring.version>
+
+        <deps.apacheCommons.text.version>1.14.0</deps.apacheCommons.text.version>
+        <deps.javaMail.version>1.4</deps.javaMail.version>
+        <deps.jetty.version>9.4.58.v20250814</deps.jetty.version>
+        <deps.lombok.version>1.18.20</deps.lombok.version>
+        <deps.slf4j.version>1.7.2</deps.slf4j.version>
+        <deps.spring.version>4.1.2.RELEASE</deps.spring.version>
+        <deps.subethamail.version>3.1.7</deps.subethamail.version>
+
+        <deps.junit.version>4.13.1</deps.junit.version>
+        <deps.mockito.version>1.8.5</deps.mockito.version>
     </properties>
 
     <build>
@@ -116,7 +126,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>${deps.lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -127,51 +137,45 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${deps.apacheCommons.text.version}</version>
         </dependency>
 
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4</version>
+            <version>${deps.javaMail.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
+            <version>${deps.slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1</version>
+            <version>${deps.slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>8.1.8.v20121106</version>
+            <version>${deps.jetty.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
-            <version>8.1.8.v20121106</version>
+            <version>${deps.jetty.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp</artifactId>
-            <version>3.1.7</version>
+            <version>${deps.subethamail.version}</version>
         </dependency>
 
         <dependency>
@@ -183,31 +187,31 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
+            <version>${deps.spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>${spring.version}</version>
+            <version>${deps.spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <version>${deps.spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>${spring.version}</version>
+            <version>${deps.spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
+            <version>${deps.spring.version}</version>
         </dependency>
 
         <!-- Test libraries ahead -->
@@ -215,14 +219,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${deps.junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>1.8.5</version>
+            <version>${deps.mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

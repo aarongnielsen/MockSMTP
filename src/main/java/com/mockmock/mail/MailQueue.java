@@ -66,19 +66,6 @@ public class MailQueue
     }
 
     /**
-     * Returns the MockMail that was last send.
-     *
-     * @return  Returns the MockMail when found or null otherwise
-     */
-    public MockMail getLastSendMail()
-    {
-        if (mailQueue.size() == 0)
-            return null;
-
-        return mailQueue.get(0);
-    }
-
-    /**
      * Removes all mail in the queue
      */
     public void emptyQueue() {
@@ -97,7 +84,7 @@ public class MailQueue
 		{
 			if(mockMail.getId() == id)
 			{
-				mailQueue.remove(mailQueue.indexOf(mockMail));
+				mailQueue.remove(mockMail);
 				return true;
 			}
 		}

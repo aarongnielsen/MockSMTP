@@ -4,6 +4,8 @@ import com.mockmock.Settings;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.UUID;
+
 public class MailQueueTest
 {
 	@Test
@@ -23,7 +25,7 @@ public class MailQueueTest
 	public void testDeleteMailFromQueue()
 	{
 		MockMail mail = new MockMail();
-		mail.setId(1337);
+		mail.setId(UUID.fromString("00000000-0000-0000-0000-000000001337"));
 		MailQueue mailQueue = new MailQueue();
 		mailQueue.setSettings(new Settings());
 		mailQueue.add(mail);
@@ -43,7 +45,7 @@ public class MailQueueTest
         MockMail mail = new MockMail();
         mailQueue.add(mail);
 
-        Assert.assertTrue(mailQueue.getMailQueue().size() == 1);
+        Assert.assertEquals(1, mailQueue.getMailQueue().size());
     }
 
     @Test
@@ -60,7 +62,7 @@ public class MailQueueTest
             mailQueue.add(mail);
         }
 
-        Assert.assertTrue(mailQueue.getMailQueue().size() == settings.getMaxMailQueueSize());
+        Assert.assertEquals(mailQueue.getMailQueue().size(), settings.getMaxMailQueueSize());
 
         for (int i = 0; i < 10; i++)
         {
@@ -68,7 +70,7 @@ public class MailQueueTest
             mailQueue.add(mail);
         }
 
-        Assert.assertTrue(mailQueue.getMailQueue().size() == settings.getMaxMailQueueSize());
+        Assert.assertEquals(mailQueue.getMailQueue().size(), settings.getMaxMailQueueSize());
     }
 
     @Test
@@ -78,13 +80,13 @@ public class MailQueueTest
         mailQueue.setSettings(new Settings());
         mailQueue.emptyQueue();
 
-        long id = 23986;
+        UUID id = UUID.randomUUID();
         MockMail mail = new MockMail();
         mail.setId(id);
         mail.setSubject("Test subject");
         mailQueue.add(mail);
 
-        long id2 = 87632;
+        UUID id2 = UUID.randomUUID();
         MockMail mail2 = new MockMail();
         mail2.setId(id2);
         mail2.setSubject("Test subject 2");

@@ -2,7 +2,7 @@ package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
 import lombok.Setter;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
@@ -66,7 +66,7 @@ public class MailListHtmlBuilder implements HtmlBuilder
         }
         else
         {
-            subjectOutput = StringEscapeUtils.escapeHtml(mail.getSubject());
+            subjectOutput = StringEscapeUtils.escapeHtml4(mail.getSubject());
         }
 
         StringBuilder attachmentStringBuilder = new StringBuilder();
@@ -82,7 +82,7 @@ public class MailListHtmlBuilder implements HtmlBuilder
             "<tr>\n" +
             "  <td>" + fromOutput + "</td>\n" +
             "  <td>" + toOutput + "</td>\n" +
-            "  <td><a title=\"" + StringEscapeUtils.escapeHtml(mail.getSubject()) + "\" href=\"/view/" + index + "\">" + subjectOutput + "</a></td>\n" +
+            "  <td><a title=\"" + StringEscapeUtils.escapeHtml4(mail.getSubject()) + "\" href=\"/view/" + index + "\">" + subjectOutput + "</a></td>\n" +
             "  <td>\n" +
                  attachmentStringBuilder +
             "    <a title=\"Delete this mail\" href=\"/delete/" + index + "\"><em>Delete</em></a>" +

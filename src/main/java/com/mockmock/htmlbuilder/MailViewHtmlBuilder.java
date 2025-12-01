@@ -2,7 +2,7 @@ package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
 import lombok.Setter;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder {
         }
         else
         {
-            subjectOutput = StringEscapeUtils.escapeHtml(mockMail.getSubject());
+            subjectOutput = StringEscapeUtils.escapeHtml4(mockMail.getSubject());
         }
 
 		subjectOutput += " <small class=\"deleteLink\"><a href=\"/delete/" + mailIndex + "\">Delete</a></small>";
@@ -64,7 +64,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder {
             output +=
                     "    <div class=\"span10\" name=\"bodyPlainText\">\n" +
                     "       <h3>Plain text body</h3>\n" +
-                    "       <div class=\"well\">" + StringEscapeUtils.escapeHtml(mockMail.getBody()) + "</div>\n" +
+                    "       <div class=\"well\">" + StringEscapeUtils.escapeHtml4(mockMail.getBody()) + "</div>\n" +
                     "    </div>\n";
         }
 
@@ -73,7 +73,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder {
             output +=
                     "    <div class=\"span10\" name=\"bodyHTML_Unformatted\">\n" +
                     "       <h3>HTML body unformatted</h3>\n" +
-                    "       <div class=\"well\">" + StringEscapeUtils.escapeHtml(mockMail.getBodyHtml()) + "</div>\n" +
+                    "       <div class=\"well\">" + StringEscapeUtils.escapeHtml4(mockMail.getBodyHtml()) + "</div>\n" +
                     "    </div>\n";
 
             // also show a parsed version via an iframe
@@ -92,7 +92,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder {
 			output +=
 					"    <div class=\"span10\" name=\"rawOutput\">\n" +
 							"       <h3>Complete raw mail output</h3>\n" +
-							"       <div class=\"well\">" + StringEscapeUtils.escapeHtml(mockMail.getRawMail()) + "</div>\n" +
+							"       <div class=\"well\">" + StringEscapeUtils.escapeHtml4(mockMail.getRawMail()) + "</div>\n" +
 							"    </div>\n";
 		}
 
