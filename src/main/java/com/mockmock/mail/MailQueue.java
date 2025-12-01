@@ -1,7 +1,6 @@
 package com.mockmock.mail;
 
 import com.google.common.eventbus.Subscribe;
-import com.mockmock.AppStarter;
 import com.mockmock.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ListIterator;
+import java.util.UUID;
 
 @Service
 public class MailQueue
@@ -44,16 +44,24 @@ public class MailQueue
      * @param id The id of the mail mail that needs to be retrieved
      * @return Returns the MockMail when found or null otherwise
      */
-    public MockMail getById(long id)
-    {
-        for(MockMail mockMail : mailQueue)
-        {
+    public MockMail getById(UUID id) {
+        for(MockMail mockMail : mailQueue) {
             if(mockMail.getId() == id)
             {
                 return mockMail;
             }
         }
 
+        return null;
+    }
+
+    public MockMail getByIndex(int index) {
+        if (index > 0 && index <= mailQueue.size()) {
+            return mailQueue.get(index - 1);
+        }
+        if (index < 0 && -index <= mailQueue.size()) {
+            return mailQueue.get(mailQueue.size() + index);
+        }
         return null;
     }
 
@@ -73,8 +81,7 @@ public class MailQueue
     /**
      * Removes all mail in the queue
      */
-    public void emptyQueue()
-    {
+    public void emptyQueue() {
         mailQueue.clear();
         mailQueue.trimToSize();
     }
@@ -84,7 +91,7 @@ public class MailQueue
 	 * @param id long
 	 * @return boolean
 	 */
-	public boolean deleteById(long id)
+	public boolean deleteById(UUID id)
 	{
 		for(MockMail mockMail : mailQueue)
 		{

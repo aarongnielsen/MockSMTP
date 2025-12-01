@@ -29,19 +29,17 @@ public class MailDeleteHandler extends BaseHandler
 			return;
 		}
 
-		long mailId = getMailId(target);
-		if(mailId == 0)
-		{
-			return;
-		}
+        int mailIndex = getMailIndex(target);
+        if(mailIndex == 0) {
+            return;
+        }
 
-		MockMail mockMail = this.mailQueue.getById(mailId);
-		if(mockMail == null)
-		{
-			return;
-		}
+        MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
+        if(mockMail == null) {
+            return;
+        }
 
-		this.mailQueue.deleteById(mailId);
+		this.mailQueue.deleteById(mockMail.getId());
 
 		response.setHeader("Location:", "/");
 		response.setStatus(302);
@@ -64,26 +62,22 @@ public class MailDeleteHandler extends BaseHandler
 	 * @param target String
 	 * @return long
 	 */
-	private long getMailId(String target)
-	{
-		Pattern compiledPattern = Pattern.compile(pattern);
+    private int getMailIndex(String target) {
+        Pattern compiledPattern = Pattern.compile(pattern);
 
-		Matcher matcher = compiledPattern.matcher(target);
-		if(matcher.find())
-		{
-			String result = matcher.group(1);
-			try
-			{
-				return Long.valueOf(result);
-			}
-			catch (NumberFormatException e)
-			{
-				return 0;
-			}
-		}
+        Matcher matcher = compiledPattern.matcher(target);
+        if(matcher.find()) {
+            String result = matcher.group(1);
+            try {
+                return Integer.parseInt(result);
+            }
+            catch (NumberFormatException e) {
+                return 0;
+            }
+        }
 
-		return 0;
-	}
+        return 0;
+    }
 
 	@Autowired
 	public void setMailQueue(MailQueue mailQueue) {

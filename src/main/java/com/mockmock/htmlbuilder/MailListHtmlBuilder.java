@@ -35,9 +35,8 @@ public class MailListHtmlBuilder implements HtmlBuilder
             output += "      <th>Action</th>\n";
             output += "    </thead>\n";
             output += "    <tbody>\n";
-            for (MockMail mail : mailQueue)
-            {
-                output += buildMailRow(mail);
+            for (int index = 0; index < mailQueue.size(); index++) {
+                output += buildMailRow(mailQueue.get(index), index + 1);
             }
             output += "    </tbody>\n";
             output += "  </table>\n";
@@ -48,7 +47,7 @@ public class MailListHtmlBuilder implements HtmlBuilder
         return output;
     }
 
-    private String buildMailRow(MockMail mail)
+    private String buildMailRow(MockMail mail, int index)
     {
         StringFromHtmlBuilder fromBuilder = new StringFromHtmlBuilder();
         fromBuilder.setMockMail(mail);
@@ -72,21 +71,21 @@ public class MailListHtmlBuilder implements HtmlBuilder
 
         StringBuilder attachmentStringBuilder = new StringBuilder();
         if (mail.getBodyHtml() != null) {
-            attachmentStringBuilder.append("    <a href=\"/view/html/" + mail.getId() + "\"><em>Body HTML</em></a><br>\n");
+            attachmentStringBuilder.append("    <a href=\"/view/html/" + index + "\"><em>Body HTML</em></a><br>\n");
         }
         for (int i = 0; i < mail.getAttachments().size(); i++) {
             MockMail.Attachment attachment = mail.getAttachments().get(i);
-            attachmentStringBuilder.append("    <a href=\"/view/" + mail.getId() + "/attachment/" + i + "\"><em>Attachment " + i + "</em></a><br>\n");
+            attachmentStringBuilder.append("    <a href=\"/view/" + index + "/attachment/" + (i + 1) + "\"><em>Attachment " + (i + 1) + "</em></a><br>\n");
         }
 
         return
             "<tr>\n" +
             "  <td>" + fromOutput + "</td>\n" +
             "  <td>" + toOutput + "</td>\n" +
-            "  <td><a title=\"" + StringEscapeUtils.escapeHtml(mail.getSubject()) + "\" href=\"/view/" + mail.getId() + "\">" + subjectOutput + "</a></td>\n" +
+            "  <td><a title=\"" + StringEscapeUtils.escapeHtml(mail.getSubject()) + "\" href=\"/view/" + index + "\">" + subjectOutput + "</a></td>\n" +
             "  <td>\n" +
                  attachmentStringBuilder +
-            "    <a title=\"Delete this mail\" href=\"/delete/" + mail.getId() + "\"><em>Delete</em></a>" +
+            "    <a title=\"Delete this mail\" href=\"/delete/" + index + "\"><em>Delete</em></a>" +
             "  </td>\n" +
             "</tr>";
     }

@@ -19,8 +19,7 @@ public class DeleteHandler extends BaseHandler
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse response) throws IOException, ServletException
     {
-        if(!target.equals("/mail/delete/all"))
-        {
+        if(!target.equals("/mail/delete/all")) {
             return;
         }
 

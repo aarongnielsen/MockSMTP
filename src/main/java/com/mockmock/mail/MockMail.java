@@ -6,12 +6,14 @@ import lombok.Setter;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 @Setter
-public class MockMail implements Comparable<MockMail>
-{
-    private long id;
+public class MockMail implements Comparable<MockMail> {
+
+    private UUID id;
     private String from;
     private String to;
     private String subject;
@@ -23,8 +25,7 @@ public class MockMail implements Comparable<MockMail>
     private final List<Attachment> attachments = new ArrayList<>();
 
     @Override
-    public int compareTo(MockMail o)
-    {
+    public int compareTo(MockMail o) {
         long receivedTime = this.getReceivedTime();
         long receivedTime2 = o.getReceivedTime();
 

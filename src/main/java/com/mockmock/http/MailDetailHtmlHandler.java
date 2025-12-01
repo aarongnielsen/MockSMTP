@@ -28,20 +28,18 @@ public class MailDetailHtmlHandler extends BaseHandler
             return;
         }
 
-        long mailId = getMailId(target);
-        if(mailId == 0)
-        {
+        int mailIndex = getMailIndex(target);
+        if(mailIndex == 0) {
             return;
         }
 
-        MockMail mockMail = this.mailQueue.getById(mailId);
-        if(mockMail == null)
-        {
+        MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
+        if(mockMail == null) {
             return;
         }
 
-		if(mockMail.getBodyHtml() == null)
-		{
+
+		if(mockMail.getBodyHtml() == null) {
 			return;
 		}
 
@@ -67,20 +65,16 @@ public class MailDetailHtmlHandler extends BaseHandler
      * @param target String
      * @return long
      */
-    private long getMailId(String target)
-    {
+    private int getMailIndex(String target) {
         Pattern compiledPattern = Pattern.compile(pattern);
 
         Matcher matcher = compiledPattern.matcher(target);
-        if(matcher.find())
-        {
+        if(matcher.find()) {
             String result = matcher.group(1);
-            try
-            {
-                return Long.valueOf(result);
+            try {
+                return Integer.parseInt(result);
             }
-            catch (NumberFormatException e)
-            {
+            catch (NumberFormatException e) {
                 return 0;
             }
         }

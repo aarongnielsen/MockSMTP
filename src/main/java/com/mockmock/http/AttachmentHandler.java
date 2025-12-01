@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 @Service
 public class AttachmentHandler extends BaseHandler
 {
-    private String pattern = "^/view/([0-9]+)/attachment/([0-9]+)/?$";
+    private final String pattern = "^/view/([0-9]+)/attachment/([0-9]+)/?$";
 
     private MailQueue mailQueue;
 
@@ -24,29 +24,26 @@ public class AttachmentHandler extends BaseHandler
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse response) throws IOException, ServletException
     {
-        if(!isMatch(target))
-        {
+        if(!isMatch(target)) {
             return;
         }
 
-        long mailId = getMailId(target);
-        if(mailId == -1)
-        {
+        int mailIndex = getMailIndex(target);
+        if(mailIndex == 0) {
             return;
         }
 
-        MockMail mockMail = this.mailQueue.getById(mailId);
-        if(mockMail == null)
-        {
+        MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
+        if(mockMail == null) {
             return;
         }
 
-        long attachmentIndex = getAttachmentIndex(target);
-        if (attachmentIndex < 0 || attachmentIndex >= mockMail.getAttachments().size()) {
+        int attachmentIndex = getAttachmentIndex(target);
+        if (attachmentIndex <= 0 || attachmentIndex > mockMail.getAttachments().size()) {
             return;
         }
 
-        MockMail.Attachment attachment = mockMail.getAttachments().get((int) attachmentIndex);
+        MockMail.Attachment attachment = mockMail.getAttachments().get(attachmentIndex - 1);
         response.setContentType(attachment.getContentType());
         response.setHeader("Content-Disposition", "filename=\"" + attachment.getFilename() + "\"");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -69,29 +66,26 @@ public class AttachmentHandler extends BaseHandler
     /**
      * Returns the mail id if it is part of the target
      * @param target String
-     * @return long
+     * @return int
      */
-    private long getMailId(String target) {
+    private int getMailIndex(String target) {
         return getRegexMatchedGroup(target, 1);
     }
 
-    private long getAttachmentIndex(String target) {
+    private int getAttachmentIndex(String target) {
         return getRegexMatchedGroup(target, 2);
     }
 
-    private long getRegexMatchedGroup(String target, int groupNumber) {
+    private int getRegexMatchedGroup(String target, int groupNumber) {
         Pattern compiledPattern = Pattern.compile(pattern);
 
         Matcher matcher = compiledPattern.matcher(target);
-        if(matcher.find())
-        {
+        if(matcher.find()) {
             String result = matcher.group(groupNumber);
-            try
-            {
-                return Long.valueOf(result);
+            try {
+                return Integer.parseInt(result);
             }
-            catch (NumberFormatException e)
-            {
+            catch (NumberFormatException e) {
                 return 0;
             }
         }

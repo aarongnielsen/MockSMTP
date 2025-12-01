@@ -1,22 +1,27 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailViewHtmlBuilder implements HtmlBuilder
-{
+public class MailViewHtmlBuilder implements HtmlBuilder {
+
+    @Autowired
+    @Setter
     private MailViewHeadersHtmlBuilder headersBuilder;
+
+    @Autowired
+    @Setter
     private AddressesHtmlBuilder addressesHtmlBuilder;
 
+    @Setter
     private MockMail mockMail;
 
-    public void setMockMail(MockMail mockMail)
-    {
-        this.mockMail = mockMail;
-    }
+    @Setter
+    private int mailIndex;
 
     public String build()
     {
@@ -34,7 +39,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder
             subjectOutput = StringEscapeUtils.escapeHtml(mockMail.getSubject());
         }
 
-		subjectOutput += " <small class=\"deleteLink\"><a href=\"/delete/" + mockMail.getId() + "\">Delete</a></small>";
+		subjectOutput += " <small class=\"deleteLink\"><a href=\"/delete/" + mailIndex + "\">Delete</a></small>";
 
         String output = "<div class=\"container\">\n";
 
@@ -75,7 +80,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder
             output +=
                     "    <div class=\"span10\" name=\"iFrame\">\n" +
                     "        <h3>HTML body formatted</h3>\n" +
-                    "        <iframe class=\"well\" src=\"/view/html/" + mockMail.getId() + "\" style=\"width: 780px; height: 700px; overflow: scroll;\" style=\"\" name=\"bodyHTML_iFrame\">\n" +
+                    "        <iframe class=\"well\" src=\"/view/html/" + mailIndex + "\" style=\"width: 780px; height: 700px; overflow: scroll;\" style=\"\" name=\"bodyHTML_iFrame\">\n" +
                     "        </iframe>\n" +
                     "    </div>";
         }
@@ -100,13 +105,4 @@ public class MailViewHtmlBuilder implements HtmlBuilder
         return output;
     }
 
-    @Autowired
-    public void setMailViewHeadersHtmlBuilder(MailViewHeadersHtmlBuilder mailViewHeadersHtmlBuilder) {
-        this.headersBuilder = mailViewHeadersHtmlBuilder;
-    }
-
-    @Autowired
-    public void setAddressesHtmlBuilder(AddressesHtmlBuilder addressesHtmlBuilder) {
-        this.addressesHtmlBuilder = addressesHtmlBuilder;
-    }
 }

@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Service
 public class MailDetailHandler extends BaseHandler
 {
-    private String pattern = "^/view/([0-9]+)/?$";
+    private String pattern = "^/view/(\\-?[0-9]+)/?$";
 
     private HeaderHtmlBuilder headerHtmlBuilder;
     private FooterHtmlBuilder footerHtmlBuilder;
@@ -36,15 +36,13 @@ public class MailDetailHandler extends BaseHandler
             return;
         }
 
-        long mailId = getMailId(target);
-        if(mailId == 0)
-        {
+        int mailIndex = getMailIndex(target);
+        if(mailIndex == 0) {
             return;
         }
 
-        MockMail mockMail = this.mailQueue.getById(mailId);
-        if(mockMail == null)
-        {
+        MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
+        if(mockMail == null) {
             return;
         }
 
@@ -53,6 +51,7 @@ public class MailDetailHandler extends BaseHandler
         String header = headerHtmlBuilder.build();
 
         mailViewHtmlBuilder.setMockMail(mockMail);
+        mailViewHtmlBuilder.setMailIndex(mailIndex);
         String body = mailViewHtmlBuilder.build();
 
         String footer = footerHtmlBuilder.build();
@@ -77,20 +76,16 @@ public class MailDetailHandler extends BaseHandler
      * @param target String
      * @return long
      */
-    private long getMailId(String target)
-    {
+    private int getMailIndex(String target) {
         Pattern compiledPattern = Pattern.compile(pattern);
 
         Matcher matcher = compiledPattern.matcher(target);
-        if(matcher.find())
-        {
+        if(matcher.find()) {
             String result = matcher.group(1);
-            try
-            {
-                return Long.valueOf(result);
+            try {
+                return Integer.parseInt(result);
             }
-            catch (NumberFormatException e)
-            {
+            catch (NumberFormatException e) {
                 return 0;
             }
         }

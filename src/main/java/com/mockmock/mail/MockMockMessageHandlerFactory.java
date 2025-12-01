@@ -19,6 +19,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.time.Instant;
 import java.util.Properties;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -58,8 +59,8 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
             this.context = context;
             this.mockMail = new MockMail();
 
-            // give the mockmail a unique id (currently its just a timestamp in ms)
-            this.mockMail.setId(Instant.now().toEpochMilli());
+            // give the mockmail a unique id (previously just a timestamp in ms)
+            this.mockMail.setId(UUID.randomUUID());
         }
 
         /**
