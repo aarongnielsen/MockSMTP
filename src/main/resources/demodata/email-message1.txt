@@ -1,0 +1,20 @@
+From: Potamus, Peter <peter.potamus@sebben.example.com>
+To: Birdman, Harvey <harvey.birdman@sebben.example.com>
+Subject: That thing I sent you
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_2657_1585216872.1759838158624"
+
+------=_Part_2657_1585216872.1759838158624
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html lang=3D"en">
+  <body>
+    <p>Hey buddy - did you get that thing I sent you?</p>
+    <p>PP</p>
+  </body>
+</html>
+
+------=_Part_2657_1585216872.1759838158624--
