@@ -41,6 +41,9 @@ public class Settings {
 	 */
     private Set<String> filterToEmailAddresses = new HashSet<>();
 
+    /** A flag to indicate whether to pre-load demo data into the server. **/
+    private boolean loadDemoData = false;
+
     /**
      * Path to the static folder containing the images, css and js
      */

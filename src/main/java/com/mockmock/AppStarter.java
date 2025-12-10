@@ -1,6 +1,7 @@
 package com.mockmock;
 
 import com.mockmock.console.Parser;
+import com.mockmock.server.DemoDataLoader;
 import com.mockmock.server.Server;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -22,6 +23,11 @@ public class AppStarter
         Server smtpServer = (Server) factory.getBean("smtpServer");
         smtpServer.setPort(settings.getSmtpPort());
         smtpServer.start();
+
+        // load demo data
+        if (settings.isLoadDemoData()) {
+            new DemoDataLoader().load();
+        }
 
         Server httpServer = (Server) factory.getBean("httpServer");
         httpServer.setPort(settings.getHttpPort());

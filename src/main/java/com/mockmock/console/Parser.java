@@ -26,6 +26,7 @@ public class Parser
         options.addOption("ff", true, "Filters out from email addresses (comma separated).");
         options.addOption("ft", true, "Filters out to email addresses (comma separated).");
         options.addOption("s", true, "Full path to the folder containing the static files like images and css.");
+        options.addOption("demo", false, "Loads demo data at startup");
         options.addOption("ec", false, "Turns on emails printing to console. Default off");
         options.addOption("?", false, "Shows this help information.");
 
@@ -47,6 +48,7 @@ public class Parser
             parseMailQueueSizeOption(cmd, settings);
 			parseFilterFromEmailAddressesOption(cmd, settings);
 			parseFilterToEmailAddressesOption(cmd, settings);
+            parseDemoDataOption(cmd, settings);
             parseStaticFolderOption(cmd, settings);
         }
         catch (ParseException parseX) {
@@ -110,6 +112,12 @@ public class Parser
 			settings.setFilterToEmailAddresses(new HashSet<>(Arrays.asList(emailAddresses)));
 		}
 	}
+
+    protected void parseDemoDataOption(CommandLine cmd, Settings settings) {
+        if (cmd.hasOption("demo")) {
+            settings.setLoadDemoData(true);
+        }
+    }
 
     protected void parseStaticFolderOption(CommandLine cmd, Settings settings) {
         if (cmd.hasOption("s")) {
