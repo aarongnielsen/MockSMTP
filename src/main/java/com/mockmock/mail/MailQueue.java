@@ -2,18 +2,19 @@ package com.mockmock.mail;
 
 import com.google.common.eventbus.Subscribe;
 import com.mockmock.Settings;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ListIterator;
 import java.util.UUID;
 
 @Service
-public class MailQueue
-{
-    private static ArrayList<MockMail> mailQueue = new ArrayList<>();
+public class MailQueue  {
+
+    @Getter
+    private final ArrayList<MockMail> mailQueue = new ArrayList<>();
 
     private Settings settings;
 
@@ -22,21 +23,16 @@ public class MailQueue
      * @param mail The MockMail object to add to the queue
      */
     @Subscribe
-    public void add(MockMail mail)
-    {
-        mailQueue.add(mail);
-        Collections.sort(mailQueue);
-        Collections.reverse(mailQueue);
-
-        trimQueue();
-    }
-
-    /**
-     * @return Returns the complete mailQueue
-     */
-    public ArrayList<MockMail> getMailQueue()
-    {
-        return mailQueue;
+    public synchronized void add(MockMail mail) {
+        // insert the new message into the list at the right index to keep the list sorted
+        synchronized (mailQueue) {
+            int insertIndex = Collections.binarySearch(mailQueue, mail);
+            if (insertIndex < 0) {
+                insertIndex = -insertIndex - 1;
+            }
+            mailQueue.add(insertIndex, mail);
+            trimQueue();
+        }
     }
 
     /**
@@ -92,29 +88,18 @@ public class MailQueue
 		return false;
 	}
 
-    /**
-     * Trims the mail queue so there aren't too many mails in it.
-     */
-    private void trimQueue()
-    {
-        if(mailQueue.size() > settings.getMaxMailQueueSize())
-        {
-            for (ListIterator<MockMail> iter = mailQueue.listIterator(mailQueue.size()); iter.hasPrevious();)
-            {
-                iter.previous();
-
-                if(mailQueue.size() <= settings.getMaxMailQueueSize())
-                {
-                    break;
-                }
-                else
-                {
-                    iter.remove();
-                }
-            }
+    /** Trims the mail queue so that the number of messages does not exceed the maximum setting. **/
+    private void trimQueue() {
+        int maxMailQueueSize = settings.getMaxMailQueueSize();
+        if (maxMailQueueSize < 0) {
+            return;
         }
 
-        mailQueue.trimToSize();
+        int numberOfMessagesToRemove = mailQueue.size() - maxMailQueueSize;
+        if (numberOfMessagesToRemove > 0) {
+            mailQueue.subList(0, numberOfMessagesToRemove).clear();
+            mailQueue.trimToSize();
+        }
     }
 
     @Autowired

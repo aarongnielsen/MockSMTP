@@ -46,6 +46,10 @@ public class DemoDataLoader {
             } catch (IOException iox) {
                 log.error("error loading demo email messages", iox);
             }
+
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException ignored) { }
         }
 
         log.info("demo data loaded");

@@ -35,9 +35,12 @@ public class MailListHtmlBuilder implements HtmlBuilder
             output += "      <th>Action</th>\n";
             output += "    </thead>\n";
             output += "    <tbody>\n";
-            for (int index = 0; index < mailQueue.size(); index++) {
+
+            // display the mail queue in reverse order of timestamp (i.e. most recent messages first)
+            for (int index = mailQueue.size() - 1; index >= 0; index--) {
                 output += buildMailRow(mailQueue.get(index), index + 1);
             }
+
             output += "    </tbody>\n";
             output += "  </table>\n";
         }
