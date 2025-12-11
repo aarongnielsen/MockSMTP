@@ -25,15 +25,13 @@ public class FooterHtmlBuilder implements HtmlBuilder
     	{
 	    	output +=
 	                "  <script src=\"/js/jquery-1.8.1.min.js\"></script>\n" +
-	                "  <script src=\"/js/bootstrap.min.js\"></script>\n" +
-	                "  <script src=\"/js/mockmock.js\"></script>\n";
+	                "  <script src=\"/js/bootstrap.min.js\"></script>\n";
     	}
     	else
     	{
     		output +=
     				"  <script>\n" + util.getResourceContentsAsString("/js/jquery-1.8.1.min.js") + "</script>\n" +
-    				"  <script>\n" + util.getResourceContentsAsString("/js/bootstrap.min.js") + "</script>\n" +
-    				"  <script>\n" + util.getResourceContentsAsString("/js/mockmock.js") + "</script>\n";
+    				"  <script>\n" + util.getResourceContentsAsString("/js/bootstrap.min.js") + "</script>\n";
     	}
 
     	output +=

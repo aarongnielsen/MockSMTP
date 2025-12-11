@@ -4,6 +4,8 @@ import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
@@ -41,9 +43,9 @@ public class MailDeleteHandler extends BaseHandler
 
 		this.mailQueue.deleteById(mockMail.getId());
 
-		response.setHeader("Location:", "/");
-		response.setStatus(302);
-
+		response.setHeader(HttpHeaders.LOCATION, "/");
+		response.setStatus(HttpStatus.FOUND.value());
+		response.getWriter().println("Mail message " + mockMail.getId() + " has been deleted");
 		request.setHandled(true);
 	}
 
