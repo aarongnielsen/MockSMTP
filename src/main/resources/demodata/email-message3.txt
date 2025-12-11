@@ -1,6 +1,6 @@
-From: Sebben, Phil Ken <phil.ken.sebben@sebben.example.com>
-To: Birdman, Harvey <harvey.birdman@sebben.example.com>
-Subject: my performance
+From: Phil Ken Sebben <phil.ken.sebben@sebben.example.com>
+To: Harvey Birdman <harvey.birdman@sebben.example.com>
+Subject: theatre performance
 MIME-Version: 1.0
 Content-Type: multipart/mixed; 
 	boundary="----=_Part_2657_1585216872.1759838158624"

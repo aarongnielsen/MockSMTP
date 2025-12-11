@@ -1,5 +1,5 @@
-From: Potamus, Peter <peter.potamus@sebben.example.com>
-To: Birdman, Harvey <harvey.birdman@sebben.example.com>
+From: Peter Potamus <peter.potamus@sebben.example.com>
+To: Harvey Birdman <harvey.birdman@sebben.example.com>
 Subject: That thing I sent you
 MIME-Version: 1.0
 Content-Type: multipart/mixed; 

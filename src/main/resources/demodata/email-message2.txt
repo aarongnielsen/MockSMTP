@@ -1,5 +1,5 @@
 From: Lizardman <lizardman@lizardman.example.com>
-To: Mightor, Hiram <hiram.mightor.j@courthouse.example.com>
+To: Hiram Mightor J <hiram.mightor.j@courthouse.example.com>
 Subject: personal details
 MIME-Version: 1.0
 Content-Type: multipart/mixed; 
