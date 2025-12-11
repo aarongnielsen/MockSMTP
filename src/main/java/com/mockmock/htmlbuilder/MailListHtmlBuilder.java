@@ -75,6 +75,10 @@ public class MailListHtmlBuilder implements HtmlBuilder
         }
 
         StringBuilder attachmentStringBuilder = new StringBuilder();
+        attachmentStringBuilder.append("    <a href=\"/view/headers/").append(index).append("\">")
+                .append("<em>").append("Headers").append("</em>")
+                .append("</a>")
+                .append("<br>\n");
         attachmentStringBuilder.append("    <a href=\"/view/body/").append(index).append("\">")
                 .append("<em>").append(mail.getBodyHtml() != null ? "Body HTML" : "Body text").append("</em>")
                 .append("</a>")

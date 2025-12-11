@@ -47,6 +47,7 @@ public class DemoDataLoader {
                 log.error("error loading demo email messages", iox);
             }
 
+            // space the loads apart so the messages don't get out of order
             try {
                 Thread.sleep(100L);
             } catch (InterruptedException ignored) { }

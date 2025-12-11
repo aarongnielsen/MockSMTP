@@ -33,6 +33,10 @@ public class HttpServer implements com.mockmock.server.Server {
     @Setter
     private ViewRawMessageHandler viewRawMessageHandler;
 
+    @Autowired
+    @Setter
+    private ViewHeadersHandler viewHeadersHandler;
+
     public void start() {
         Server http = new Server(port);
 
@@ -59,6 +63,7 @@ public class HttpServer implements com.mockmock.server.Server {
 			this.deleteHandler,
             this.attachmentHandler,
             this.viewRawMessageHandler,
+            this.viewHeadersHandler,
 			resourceHandler
         };
         HandlerList handlerList = new HandlerList();
@@ -99,7 +104,6 @@ public class HttpServer implements com.mockmock.server.Server {
     public void setDeleteHandler(DeleteHandler deleteHandler) {
         this.deleteHandler = deleteHandler;
     }
-
 
     @Autowired
     public void setAttachmentHandler(AttachmentHandler attachmentHandler) {
