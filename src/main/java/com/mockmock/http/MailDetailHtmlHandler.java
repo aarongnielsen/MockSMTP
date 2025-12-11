@@ -13,9 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class MailDetailHtmlHandler extends BaseHandler
-{
-    private String pattern = "^/view/html/([0-9]+)/?$";
+public class MailDetailHtmlHandler extends BaseHandler {
+
+    private final String pattern = "^/view/body/(-?[0-9]+)/?$";
 
     private MailQueue mailQueue;
 
@@ -38,16 +38,16 @@ public class MailDetailHtmlHandler extends BaseHandler
             return;
         }
 
-
-		if(mockMail.getBodyHtml() == null) {
-			return;
-		}
-
         setDefaultResponseOptions(response);
-
-        response.getWriter().print(mockMail.getBodyHtml());
-
-        request.setHandled(true);
+		if (mockMail.getBodyHtml() != null) {
+            response.getWriter().print(mockMail.getBodyHtml());
+            request.setHandled(true);
+		}
+        else if (mockMail.getBody() != null) {
+            response.setContentType("text/plain;charset=utf-8");
+            response.getWriter().print(mockMail.getBody());
+            request.setHandled(true);
+        }
     }
 
     /**

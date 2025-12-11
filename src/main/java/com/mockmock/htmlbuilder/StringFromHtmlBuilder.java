@@ -1,58 +1,54 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-public class StringFromHtmlBuilder implements HtmlBuilder
-{
+@Setter
+@Slf4j
+public class StringFromHtmlBuilder implements HtmlBuilder {
+
     private MockMail mockMail;
+    private int maxLength = 0;
 
-    public String build()
-    {
-        String output = "";
+    @Override
+    public String build() {
         MimeMessage mimeMessage = mockMail.getMimeMessage();
-
-		if(mimeMessage == null)
-		{
-			return output;
+		if (mimeMessage == null) {
+			return "";
 		}
 
-        try
-        {
+        String longAddresses;
+        try {
             Address[] addresses = mimeMessage.getFrom();
-            if(addresses != null)
-            {
-                int i = 1;
-                for(Address address : addresses)
-                {
-                    output += StringEscapeUtils.escapeHtml4(address.toString());
-                    if(addresses.length != i)
-                    {
-                        output += ", ";
-                    }
+            if (addresses != null) {
+                longAddresses = Arrays.stream(addresses)
+                        .map(address -> StringEscapeUtils.escapeHtml4(address.toString()))
+                        .collect(Collectors.joining(", "));
+            } else {
+                longAddresses = StringEscapeUtils.escapeHtml4(mockMail.getFrom());
+            }
 
-                    i++;
-                }
+            String shortAddresses = longAddresses;
+            if (maxLength > 0 && longAddresses.length() > maxLength) {
+                shortAddresses = longAddresses.substring(0, maxLength) + "...";
             }
-            else
-            {
-                output += StringEscapeUtils.escapeHtml4(mockMail.getFrom());
-            }
+
+            return "<span title=\"" + longAddresses + "\">" + shortAddresses + "</title>";
         }
-        catch (MessagingException e)
-        {
-            e.printStackTrace();
+        catch (MessagingException msgX) {
+            log.error("error reading sender details from email", msgX);
         }
 
-        return output;
+        // should never happen
+        return null;
     }
 
-    public void setMockMail(MockMail mockMail)
-    {
-        this.mockMail = mockMail;
-    }
 }

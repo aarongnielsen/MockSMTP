@@ -23,8 +23,8 @@ public class DemoDataLoader {
 
             //  - SMTP handshake
             stringBuilder.append("HELO example.com").append("\r\n")
-                    .append("MAIL FROM: alice@example.com").append("\r\n")
-                    .append("RCPT TO: bob@example.com").append("\r\n")
+                    .append("MAIL FROM: demodata@example.com").append("\r\n")
+                    .append("RCPT TO: demorecipient@example.com").append("\r\n")
                     .append("DATA\r\n");
 
             //  - read mail message contents

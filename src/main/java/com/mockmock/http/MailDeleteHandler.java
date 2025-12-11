@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @Service
 public class MailDeleteHandler extends BaseHandler
 {
-	private String pattern = "^/delete/([0-9]+)/?$";
+	private final String pattern = "^/delete/(-?[0-9]+)/?$";
 
 	private MailQueue mailQueue;
 
@@ -26,7 +26,7 @@ public class MailDeleteHandler extends BaseHandler
 	public void handle(String target, Request request, HttpServletRequest httpServletRequest,
 					   HttpServletResponse response) throws IOException, ServletException
 	{
-		if( ! isMatch(target))
+		if(!isMatch(target))
 		{
 			return;
 		}

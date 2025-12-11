@@ -9,13 +9,10 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -31,6 +28,10 @@ public class HttpServer implements com.mockmock.server.Server {
     private MailDeleteHandler mailDeleteHandler;
     private DeleteHandler deleteHandler;
     private AttachmentHandler attachmentHandler;
+
+    @Autowired
+    @Setter
+    private ViewRawMessageHandler viewRawMessageHandler;
 
     public void start() {
         Server http = new Server(port);
@@ -57,6 +58,7 @@ public class HttpServer implements com.mockmock.server.Server {
 			this.mailDeleteHandler,
 			this.deleteHandler,
             this.attachmentHandler,
+            this.viewRawMessageHandler,
 			resourceHandler
         };
         HandlerList handlerList = new HandlerList();
@@ -97,6 +99,7 @@ public class HttpServer implements com.mockmock.server.Server {
     public void setDeleteHandler(DeleteHandler deleteHandler) {
         this.deleteHandler = deleteHandler;
     }
+
 
     @Autowired
     public void setAttachmentHandler(AttachmentHandler attachmentHandler) {

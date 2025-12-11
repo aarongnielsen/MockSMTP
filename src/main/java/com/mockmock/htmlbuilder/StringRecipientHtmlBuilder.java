@@ -1,92 +1,54 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-public class StringRecipientHtmlBuilder implements HtmlBuilder
-{
+@Setter
+@Slf4j
+public class StringRecipientHtmlBuilder implements HtmlBuilder {
+
     private MockMail mockMail;
     private int maxLength = 0;
     Message.RecipientType recipientType;
 
-    public String build()
-    {
-        String output = "";
+    public String build() {
         MimeMessage mimeMessage = mockMail.getMimeMessage();
-
-		if(mimeMessage == null)
-		{
-			return output;
+		if(mimeMessage == null) {
+			return "";
 		}
 
-        try
-        {
-            Address[] addresses;
-            if(recipientType == null)
-            {
-                addresses = mimeMessage.getAllRecipients();
-            }
-            else
-            {
-                addresses = mimeMessage.getRecipients(recipientType);
+        try {
+            Address[] addresses = (recipientType == null ? mimeMessage.getAllRecipients() : mimeMessage.getRecipients(recipientType));
+            if (addresses == null) {
+                return (recipientType == Message.RecipientType.TO ? mockMail.getTo() : "");
             }
 
-            if(addresses == null)
-            {
-                if(recipientType == MimeMessage.RecipientType.TO)
-                {
-                    return mockMail.getTo();
-                }
-                return "";
+            String longAddresses = Arrays.stream(addresses)
+                    .map(address -> StringEscapeUtils.escapeHtml4(address.toString()))
+                    .collect(Collectors.joining(", "));
+
+            String shortAddresses = longAddresses;
+            if(maxLength > 0 && longAddresses.length() > maxLength) {
+                shortAddresses = longAddresses.substring(0, maxLength) + "...";
             }
 
-            int i = 1;
-            for(Address address : addresses)
-            {
-                output += StringEscapeUtils.escapeHtml4(address.toString());
-                if(addresses.length != i)
-                {
-                    output += ", ";
-                }
-
-                i++;
-            }
+            return "<span title=\"" + longAddresses + "\">" + shortAddresses + "</title>";
         }
-        catch (MessagingException e)
-        {
-            e.printStackTrace();
+        catch (MessagingException msgX) {
+            log.error("error reading recipient details from email", msgX);
         }
 
-        String shortName;
-        if(maxLength > 0 && output.length() > maxLength)
-        {
-            shortName = output.substring(0, maxLength - 3) + "...";
-        }
-        else
-        {
-            shortName = output;
-        }
-
-        return "<span title=\"" + output + "\">" + shortName + "</title>";
+        // should never happen
+        return null;
     }
 
-    public void setMockMail(MockMail mockMail)
-    {
-        this.mockMail = mockMail;
-    }
-
-    public void setMaxLength(int maxLength)
-    {
-        this.maxLength = maxLength;
-    }
-
-    public void setRecipientType(Message.RecipientType recipientType)
-    {
-        this.recipientType = recipientType;
-    }
 }

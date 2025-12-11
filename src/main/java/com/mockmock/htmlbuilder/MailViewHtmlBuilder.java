@@ -80,7 +80,7 @@ public class MailViewHtmlBuilder implements HtmlBuilder {
             output +=
                     "    <div class=\"span10\" name=\"iFrame\">\n" +
                     "        <h3>HTML body formatted</h3>\n" +
-                    "        <iframe class=\"well\" src=\"/view/html/" + mailIndex + "\" style=\"width: 780px; height: 700px; overflow: scroll;\" style=\"\" name=\"bodyHTML_iFrame\">\n" +
+                    "        <iframe class=\"well\" src=\"/view/body/" + mailIndex + "\" style=\"width: 780px; height: 700px; overflow: scroll;\" style=\"\" name=\"bodyHTML_iFrame\">\n" +
                     "        </iframe>\n" +
                     "    </div>";
         }

@@ -32,6 +32,7 @@ public class MailListHtmlBuilder implements HtmlBuilder
             output += "      <th>From</th>\n";
             output += "      <th>To</th>\n";
             output += "      <th>Subject</th>\n";
+            output += "      <th>Sections</th>\n";
             output += "      <th>Action</th>\n";
             output += "    </thead>\n";
             output += "    <tbody>\n";
@@ -53,11 +54,12 @@ public class MailListHtmlBuilder implements HtmlBuilder
     private String buildMailRow(MockMail mail, int index)
     {
         StringFromHtmlBuilder fromBuilder = new StringFromHtmlBuilder();
+        fromBuilder.setMaxLength(30);
         fromBuilder.setMockMail(mail);
         String fromOutput = fromBuilder.build();
 
         StringRecipientHtmlBuilder recipientBuilder = new StringRecipientHtmlBuilder();
-        recipientBuilder.setMaxLength(27);
+        recipientBuilder.setMaxLength(30);
         recipientBuilder.setMockMail(mail);
         recipientBuilder.setRecipientType(MimeMessage.RecipientType.TO);
         String toOutput = recipientBuilder.build();
@@ -73,9 +75,10 @@ public class MailListHtmlBuilder implements HtmlBuilder
         }
 
         StringBuilder attachmentStringBuilder = new StringBuilder();
-        if (mail.getBodyHtml() != null) {
-            attachmentStringBuilder.append("    <a href=\"/view/html/" + index + "\"><em>Body HTML</em></a><br>\n");
-        }
+        attachmentStringBuilder.append("    <a href=\"/view/body/").append(index).append("\">")
+                .append("<em>").append(mail.getBodyHtml() != null ? "Body HTML" : "Body text").append("</em>")
+                .append("</a>")
+                .append("<br>\n");
         for (int i = 0; i < mail.getAttachments().size(); i++) {
             MockMail.Attachment attachment = mail.getAttachments().get(i);
             attachmentStringBuilder.append("    <a href=\"/view/" + index + "/attachment/" + (i + 1) + "\"><em>Attachment " + (i + 1) + "</em></a><br>\n");
@@ -88,7 +91,10 @@ public class MailListHtmlBuilder implements HtmlBuilder
             "  <td><a title=\"" + StringEscapeUtils.escapeHtml4(mail.getSubject()) + "\" href=\"/view/" + index + "\">" + subjectOutput + "</a></td>\n" +
             "  <td>\n" +
                  attachmentStringBuilder +
-            "    <a title=\"Delete this mail\" href=\"/delete/" + index + "\"><em>Delete</em></a>" +
+            "  </td>\n" +
+            "  <td>\n" +
+            "    <a href=\"/view/raw/" + index + "\"><em>View raw text</em></a><br>\n" +
+            "    <a href=\"/delete/" + index + "\"><em>Delete</em></a>" +
             "  </td>\n" +
             "</tr>";
     }

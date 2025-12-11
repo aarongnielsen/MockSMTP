@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 @Service
 public class AttachmentHandler extends BaseHandler
 {
-    private final String pattern = "^/view/([0-9]+)/attachment/([0-9]+)/?$";
+    private final String pattern = "^/view/(-?[0-9]+)/attachment/([0-9]+)/?$";
 
     private MailQueue mailQueue;
 

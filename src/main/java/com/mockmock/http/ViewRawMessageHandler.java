@@ -1,10 +1,8 @@
 package com.mockmock.http;
 
-import com.mockmock.htmlbuilder.FooterHtmlBuilder;
-import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
-import com.mockmock.htmlbuilder.MailViewHtmlBuilder;
 import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,22 +15,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class MailDetailHandler extends BaseHandler
-{
-    private final String pattern = "^/view/(-?[0-9]+)/?$";
+public class ViewRawMessageHandler extends BaseHandler {
 
-    private HeaderHtmlBuilder headerHtmlBuilder;
-    private FooterHtmlBuilder footerHtmlBuilder;
-    private MailViewHtmlBuilder mailViewHtmlBuilder;
+    private final String pattern = "^/view/raw/(-?[0-9]+)/?$";
 
+    @Autowired
+    @Setter
     private MailQueue mailQueue;
 
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
-                       HttpServletResponse response) throws IOException, ServletException
+                       HttpServletResponse httpServletResponse) throws IOException, ServletException
     {
-        if(!isMatch(target))
-        {
+        if (!isMatch(target)) {
             return;
         }
 
@@ -46,18 +41,9 @@ public class MailDetailHandler extends BaseHandler
             return;
         }
 
-        setDefaultResponseOptions(response);
-
-        String header = headerHtmlBuilder.build();
-
-        mailViewHtmlBuilder.setMockMail(mockMail);
-        mailViewHtmlBuilder.setMailIndex(mailIndex);
-        String body = mailViewHtmlBuilder.build();
-
-        String footer = footerHtmlBuilder.build();
-
-        response.getWriter().print(header + body + footer);
-
+        httpServletResponse.setContentType("text/plain;charset=utf-8");
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        httpServletResponse.getWriter().write(mockMail.getRawMail());
         request.setHandled(true);
     }
 
@@ -66,8 +52,7 @@ public class MailDetailHandler extends BaseHandler
      * @param target String
      * @return boolean
      */
-    private boolean isMatch(String target)
-    {
+    private boolean isMatch(String target) {
         return target.matches(pattern);
     }
 
@@ -93,23 +78,4 @@ public class MailDetailHandler extends BaseHandler
         return 0;
     }
 
-    @Autowired
-    public void setHeaderHtmlBuilder(HeaderHtmlBuilder headerHtmlBuilder) {
-        this.headerHtmlBuilder = headerHtmlBuilder;
-    }
-
-    @Autowired
-    public void setFooterHtmlBuilder(FooterHtmlBuilder footerHtmlBuilder) {
-        this.footerHtmlBuilder = footerHtmlBuilder;
-    }
-
-    @Autowired
-    public void setMailViewHtmlBuilder(MailViewHtmlBuilder mailViewHtmlBuilder) {
-        this.mailViewHtmlBuilder = mailViewHtmlBuilder;
-    }
-
-    @Autowired
-    public void setMailQueue(MailQueue mailQueue) {
-        this.mailQueue = mailQueue;
-    }
 }
