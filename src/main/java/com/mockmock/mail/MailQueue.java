@@ -1,6 +1,5 @@
 package com.mockmock.mail;
 
-import com.google.common.eventbus.Subscribe;
 import com.mockmock.Settings;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ public class MailQueue  {
      * Add a MockMail to the queue. Queue is sorted and trimmed right after it.
      * @param mail The MockMail object to add to the queue
      */
-    @Subscribe
     public synchronized void add(MockMail mail) {
         // insert the new message into the list at the right index to keep the list sorted
         synchronized (mailQueue) {

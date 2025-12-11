@@ -2,11 +2,8 @@ package com.mockmock.server;
 
 import com.mockmock.AppStarter;
 import com.mockmock.mail.MockMockMessageHandlerFactory;
-import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.subethamail.smtp.server.SMTPServer;
@@ -29,10 +26,10 @@ public class SmtpServer implements Server {
         server.setPort(port);
 
         try {
-            log.info("Starting MockMock on port {}", port);
             server.start();
+            log.info("MockSMTP is listening for SMTP on port {}", port);
         } catch (Exception x) {
-            log.info("Could not start MockMock. Maybe port {} is already in use?", port);
+            log.error("Could not start SMTP server. Maybe port {} is already in use? {}", port, x.getMessage());
             log.debug("Stacktrace:", x);
         }
     }

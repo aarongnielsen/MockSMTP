@@ -1,6 +1,5 @@
 package com.mockmock.mail;
 
-import com.google.common.eventbus.EventBus;
 import com.mockmock.Settings;
 import com.mockmock.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -25,20 +24,14 @@ import java.util.UUID;
 @Slf4j
 public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
 
-    private EventBus eventBus;
-	private Settings settings;
+    private final MailQueue mailQueue;
+	private final Settings settings;
 
     @Autowired
-    public MockMockMessageHandlerFactory(EventBus eventBus)
-    {
-        this.eventBus = eventBus;
+    public MockMockMessageHandlerFactory(MailQueue mailQueue, Settings settings) {
+        this.mailQueue = mailQueue;
+        this.settings = settings;
     }
-
-	@Autowired
-	public void setSettings(Settings settings)
-	{
-		this.settings = settings;
-	}
 
 	@Override
     public MessageHandler create(MessageContext messageContext)
@@ -64,10 +57,8 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
         }
 
         /**
-         * Called first, after the MAIL FROM during a SMTP exchange.
-         *
-         * @param from String
-         * @throws RejectException
+         * Called to set the sender's address, upon receiving the {@code MAIL FROM} command in an SMTP exchange.
+         * This is typically called before the {@link #recipient(String) recipients} are set.
          */
         @Override
         public void from(String from) throws RejectException {
@@ -79,11 +70,11 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
         }
 
         /**
-         * Called once for every RCPT TO during a SMTP exchange.
-         * This will occur after a from() call.
-         *
-         * @param recipient String
-         * @throws RejectException
+         * Called to set the recipient's address, upon receiving the {@code RCPT} command in an SMTP exchange.
+         * This is typically called just after the {@link #from(String) sender} is set.
+         * <p>
+         * Note that this may be called multiple times for different recipient types (e.g. CC/BCC).
+         * However, this application only stores one recipient, presumed to be in the {@code To:} field.
          */
         @Override
         public void recipient(String recipient) throws RejectException {
@@ -94,13 +85,7 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
             }
         }
 
-        /**
-         * Called when the DATA part of the SMTP exchange begins.
-         *
-         * @param data InputStream
-         * @throws RejectException
-         * @throws IOException
-         */
+        /** Called to store the message data, upon receiving the {@code DATA} command in an SMTP exchange. **/
         @Override
         public void data(InputStream data) throws RejectException, IOException {
             Util util = new Util();
@@ -157,8 +142,8 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
                         mockMail.setBodyHtml(messageContent.toString());
                     }
                 }
-            } catch (MessagingException e) {
-                e.printStackTrace();
+            } catch (MessagingException msgX) {
+                log.error("Error processing message data", msgX);
             }
 
             if (settings.isShowEmailInConsole()) {
@@ -192,7 +177,7 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
                 System.out.println("Finished");
             }
 
-            eventBus.post(mockMail);
+            mailQueue.add(mockMail);
         }
     }
 
