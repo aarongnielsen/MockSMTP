@@ -33,6 +33,7 @@ public class SmtpServer implements Server {
         } catch (Exception x) {
             log.error("Could not start SMTP server. Maybe port {} is already in use? {}", settings.getSmtpPort(), x.getMessage());
             log.debug("Stacktrace:", x);
+            throw new RuntimeException(x);
         }
     }
 

@@ -52,12 +52,20 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
 
         // start the servers here
         if (exitCode == 0) {
-            beanFactory.getBean(SmtpServer.class).start();
-            if (appSettings.isLoadDemoData()) {
-                new DemoDataLoader().load();
+            try {
+                beanFactory.getBean(SmtpServer.class).start();
+                if (appSettings.isLoadDemoData()) {
+                    new DemoDataLoader().load();
+                }
+            } catch (Exception x) {
+                exitCode = 2;
             }
 
-            beanFactory.getBean(HttpServer.class).start();
+            try {
+                beanFactory.getBean(HttpServer.class).start();
+            } catch (Exception x) {
+                exitCode = 3;
+            }
         }
     }
 

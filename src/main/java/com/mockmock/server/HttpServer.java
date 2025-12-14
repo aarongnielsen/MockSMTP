@@ -65,8 +65,9 @@ public class HttpServer implements com.mockmock.server.Server {
             http.start();
             log.info("Starting HTTP server on http://localhost:{}", settings.getHttpPort());
         } catch (Exception x) {
-            log.error("Could not start HTTP server. Maybe port {} is already in use? {}", settings.getHttpPort(), x.getMessage());
+            log.error("Could not start HTTP server. Maybe port {} is already in use? {}", settings.getHttpPort(), x.toString());
             log.debug("Stacktrace:", x);
+            throw new RuntimeException(x);
         }
     }
 
