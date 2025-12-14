@@ -1,17 +1,22 @@
 package com.mockmock.server;
 
+import com.mockmock.Settings;
 import com.mockmock.Util;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-@Service
+@RequiredArgsConstructor
 @Slf4j
 public class DemoDataLoader {
+
+    @NonNull
+    private Settings settings;
 
     public void load() {
         // build email message to send
@@ -39,7 +44,7 @@ public class DemoDataLoader {
                     .append("QUIT").append("\r\n");
 
             // send the email
-            try (Socket socket = new Socket("localhost", 25)) {
+            try (Socket socket = new Socket("localhost", settings.getSmtpPort())) {
                 BufferedOutputStream socketOutputStream = new BufferedOutputStream(socket.getOutputStream());
                 socketOutputStream.write(stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
                 socketOutputStream.close();

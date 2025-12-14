@@ -55,7 +55,7 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
             try {
                 beanFactory.getBean(SmtpServer.class).start();
                 if (appSettings.isLoadDemoData()) {
-                    new DemoDataLoader().load();
+                    new DemoDataLoader(appSettings).load();
                 }
             } catch (Exception x) {
                 exitCode = 2;
