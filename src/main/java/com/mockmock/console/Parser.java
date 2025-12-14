@@ -25,7 +25,6 @@ public class Parser
         options.addOption("m", true, "The maximum size of the mail qeueue. Default is 1000.");
         options.addOption("ff", true, "Filters out from email addresses (comma separated).");
         options.addOption("ft", true, "Filters out to email addresses (comma separated).");
-        options.addOption("s", true, "Full path to the folder containing the static files like images and css.");
         options.addOption("demo", false, "Loads demo data at startup");
         options.addOption("?", false, "Shows this help information.");
 
@@ -47,7 +46,6 @@ public class Parser
 			parseFilterFromEmailAddressesOption(cmd, settings);
 			parseFilterToEmailAddressesOption(cmd, settings);
             parseDemoDataOption(cmd, settings);
-            parseStaticFolderOption(cmd, settings);
         }
         catch (ParseException parseX) {
             log.error("error parsing command line arguments", parseX);
@@ -111,9 +109,4 @@ public class Parser
         }
     }
 
-    protected void parseStaticFolderOption(CommandLine cmd, Settings settings) {
-        if (cmd.hasOption("s")) {
-            settings.setStaticFolderPath(cmd.getOptionValue("s"));
-        }
-    }
 }

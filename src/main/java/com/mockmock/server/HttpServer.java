@@ -1,18 +1,16 @@
 package com.mockmock.server;
 
-import com.mockmock.AppStarter;
-import com.mockmock.Settings;
 import com.mockmock.http.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
 
 @Service
 @Slf4j
@@ -21,7 +19,6 @@ public class HttpServer implements com.mockmock.server.Server {
     @Setter
     private int port;
 
-    private Settings settings;
     private IndexHandler indexHandler;
     private MailDetailHandler mailDetailHandler;
     private MailDetailHtmlHandler mailDetailHtmlHandler;
@@ -40,20 +37,11 @@ public class HttpServer implements com.mockmock.server.Server {
     public void start() {
         Server http = new Server(port);
 
-        // get the path to the "static" folder. If it doesn't exists, check if it's in the folder of the file being executed.
-        String pathToStaticResources = (settings.getStaticFolderPath() != null ? settings.getStaticFolderPath() : "./static");
-        if (!new File(pathToStaticResources).exists()) {
-            log.info("Path to static folder does not exist: {}", pathToStaticResources);
-
-            // check inside the directory we're in
-            pathToStaticResources = AppStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            pathToStaticResources = new File(pathToStaticResources).getParent() + "/static";
-        }
-
-        log.info("Path to static resources: {}", pathToStaticResources);
-
+        // set up the folder of web-facing static files (e.g. images, styles, scripts)
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase(pathToStaticResources);
+        resourceHandler.setBaseResource(Resource.newClassPathResource("/web-static"));
+        ContextHandler contextHandler = new ContextHandler("/web-static");
+        contextHandler.setHandler(resourceHandler);
 
         Handler[] handlers = {
 			this.indexHandler,
@@ -64,7 +52,7 @@ public class HttpServer implements com.mockmock.server.Server {
             this.attachmentHandler,
             this.viewRawMessageHandler,
             this.viewHeadersHandler,
-			resourceHandler
+            contextHandler
         };
         HandlerList handlerList = new HandlerList();
         handlerList.setHandlers(handlers);
@@ -110,8 +98,4 @@ public class HttpServer implements com.mockmock.server.Server {
         this.attachmentHandler = attachmentHandler;
     }
 
-    @Autowired
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-    }
 }
