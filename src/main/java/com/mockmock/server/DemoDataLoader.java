@@ -20,7 +20,7 @@ public class DemoDataLoader {
 
     public void load() {
         // build email message to send
-        final String resourcePath = "/demodata/";
+        final String resourceBasePath = "/demodata/";
         Util util = new Util();
         for (int i = 1; i <= 3; i++) {
             // build a message to send:
@@ -33,8 +33,8 @@ public class DemoDataLoader {
                     .append("DATA\r\n");
 
             //  - read mail message contents
-            String resourceFile = resourcePath + "email-message" + i + ".txt";
-            String emailMessage = util.getResourceContentsAsString(resourceFile);
+            String resourceFile = resourceBasePath + "email-message" + i + ".txt";
+            String emailMessage = util.getStreamContentsAsString(getClass().getResourceAsStream(resourceFile));
             stringBuilder.append(emailMessage);
 
             //  - close SMTP session
