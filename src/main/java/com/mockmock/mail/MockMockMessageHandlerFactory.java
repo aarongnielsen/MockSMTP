@@ -63,10 +63,6 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
         @Override
         public void from(String from) throws RejectException {
             this.mockMail.setFrom(from);
-
-            if (settings.isShowEmailInConsole()) {
-                System.out.println("FROM:" + from);
-            }
         }
 
         /**
@@ -79,10 +75,6 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
         @Override
         public void recipient(String recipient) throws RejectException {
             this.mockMail.setTo(recipient);
-
-            if (settings.isShowEmailInConsole()) {
-                System.out.println("RECIPIENT:" + recipient);
-            }
         }
 
         /** Called to store the message data, upon receiving the {@code DATA} command in an SMTP exchange. **/
@@ -145,13 +137,6 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
             } catch (MessagingException msgX) {
                 log.error("Error processing message data", msgX);
             }
-
-            if (settings.isShowEmailInConsole()) {
-                System.out.println("MAIL DATA");
-                System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-                System.out.println(mockMail.getRawMail());
-                System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-            }
         }
 
         @Override
@@ -171,13 +156,8 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
             // set the received date
             mockMail.setReceivedTime(Instant.now().toEpochMilli());
 
-            log.info("Email received from {}", mockMail.getFrom());
-
-            if (settings.isShowEmailInConsole()) {
-                System.out.println("Finished");
-            }
-
             mailQueue.add(mockMail);
+            log.info("Email received from {}", mockMail.getFrom());
         }
     }
 

@@ -12,11 +12,6 @@ import java.util.Set;
 @Setter
 public class Settings {
     /**
-     * Whether to show console output when receiving email.
-     */
-    private boolean showEmailInConsole = false;
-
-    /**
      * The default port where MockMock will run on
      */
     private int smtpPort = 25;

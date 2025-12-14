@@ -27,7 +27,6 @@ public class Parser
         options.addOption("ft", true, "Filters out to email addresses (comma separated).");
         options.addOption("s", true, "Full path to the folder containing the static files like images and css.");
         options.addOption("demo", false, "Loads demo data at startup");
-        options.addOption("ec", false, "Turns on emails printing to console. Default off");
         options.addOption("?", false, "Shows this help information.");
 
         // parse the given arguments
@@ -42,7 +41,6 @@ public class Parser
                 System.exit(0);
             }
 
-            parseShowEmailInConsoleOption(cmd, settings);
             parseSmtpPortOption(cmd, settings);
             parseHttpPortOption(cmd, settings);
             parseMailQueueSizeOption(cmd, settings);
@@ -56,12 +54,6 @@ public class Parser
         }
 
         return settings;
-    }
-
-    protected void parseShowEmailInConsoleOption(CommandLine cmd, Settings settings) {
-        if (cmd.hasOption("ec")) {
-            settings.setShowEmailInConsole(true);
-        }
     }
 
     protected void parseSmtpPortOption(CommandLine cmd, Settings settings) {
