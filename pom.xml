@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mockmock</groupId>
-    <artifactId>MockMock</artifactId>
+    <artifactId>MockSMTP</artifactId>
     <version>1.5.0-dev</version>
     <packaging>jar</packaging>
 
-    <name>MockMock</name>
+    <name>MockSMTP</name>
     <description>Mock SMTP Server</description>
     <inceptionYear>2012</inceptionYear>
     <url>https://github.com/tweakers-dev/MockMock</url>
@@ -63,6 +63,8 @@
                     <archive>
                         <manifest>
                             <mainClass>com.mockmock.Main</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -94,6 +96,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <version>${deps.springboot.version}</version>
+            <exclusions>
+                <!-- unused transitive dependencies -->
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -143,36 +156,6 @@
             <artifactId>subethasmtp</artifactId>
             <version>${deps.subethamail.version}</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-core</artifactId>-->
-<!--            <version>${deps.spring.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-beans</artifactId>-->
-<!--            <version>${deps.spring.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-context</artifactId>-->
-<!--            <version>${deps.spring.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-context-support</artifactId>-->
-<!--            <version>${deps.spring.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-webmvc</artifactId>-->
-<!--            <version>${deps.spring.version}</version>-->
-<!--        </dependency>-->
 
         <!-- Test libraries ahead -->
 

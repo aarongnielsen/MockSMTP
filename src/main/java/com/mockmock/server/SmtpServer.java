@@ -1,6 +1,5 @@
 package com.mockmock.server;
 
-import com.mockmock.AppStarter;
 import com.mockmock.Settings;
 import com.mockmock.mail.MockMockMessageHandlerFactory;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public class SmtpServer implements Server {
     public void start() {
         // start the smtp server!
         SMTPServer server = new SMTPServer(handlerFactory);
-        server.setSoftwareName("MockMock SMTP Server version " + AppStarter.VERSION_NUMBER);
+        server.setSoftwareName("MockSMTP");
         server.setPort(settings.getSmtpPort());
 
         try {

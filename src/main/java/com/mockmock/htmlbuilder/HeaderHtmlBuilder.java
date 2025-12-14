@@ -1,6 +1,6 @@
 package com.mockmock.htmlbuilder;
 
-import com.mockmock.AppStarter;
+import com.mockmock.Main;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,7 +12,7 @@ public class HeaderHtmlBuilder implements HtmlBuilder {
                 "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "  <head>\n" +
-                "    <title>MockMock - SMTP Mock Server version " + AppStarter.VERSION_NUMBER + "</title>\n" +
+                "    <title>MockMock - SMTP Mock Server version " + Main.VERSION_NUMBER + "</title>\n" +
                 "    <link href=\"/web-static/css/bootstrap.min.css\" rel=\"stylesheet\">\n" +
                 "    <link href=\"/web-static/css/mockmock.css\" rel=\"stylesheet\">\n" +
                 "  </head>\n" +
