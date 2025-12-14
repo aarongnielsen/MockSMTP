@@ -15,11 +15,6 @@ import java.util.Set;
 @Command(name = "MockSMTP", description = "MockSMTP is a mock server for testing outgoing emails.")
 public class Settings {
 
-    /**
-     * Whether to show console output when receiving email.
-     */
-    private boolean showEmailInConsole = false;
-
     /** The default port on which MockSMTP will listen for SMTP connections (default is 25). **/
     @Option(names = { "-p", "--smtp-port" }, description = "SMTP server port", defaultValue = "25")
     private int smtpPort = 25;

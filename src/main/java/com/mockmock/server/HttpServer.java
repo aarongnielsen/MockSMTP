@@ -1,5 +1,6 @@
 package com.mockmock.server;
 
+import com.mockmock.Settings;
 import com.mockmock.http.*;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class HttpServer implements com.mockmock.server.Server {
 
-    @Setter
-    private int port;
-
     private IndexHandler indexHandler;
     private MailDetailHandler mailDetailHandler;
     private MailDetailHtmlHandler mailDetailHtmlHandler;
@@ -28,14 +26,19 @@ public class HttpServer implements com.mockmock.server.Server {
 
     @Autowired
     @Setter
+    private Settings settings;
+
+    @Autowired
+    @Setter
     private ViewRawMessageHandler viewRawMessageHandler;
 
     @Autowired
     @Setter
     private ViewHeadersHandler viewHeadersHandler;
 
+    @Override
     public void start() {
-        Server http = new Server(port);
+        Server http = new Server(settings.getHttpPort());
 
         // set up the folder of web-facing static files (e.g. images, styles, scripts)
         ResourceHandler resourceHandler = new ResourceHandler();
@@ -59,11 +62,10 @@ public class HttpServer implements com.mockmock.server.Server {
         http.setHandler(handlerList);
 
         try {
-            log.info("Starting HTTP server on http://localhost:{}", port);
             http.start();
-            http.join();
+            log.info("Starting HTTP server on http://localhost:{}", settings.getHttpPort());
         } catch (Exception x) {
-            log.error("Could not start HTTP server. Maybe port {} is already in use? {}", port, x.getMessage());
+            log.error("Could not start HTTP server. Maybe port {} is already in use? {}", settings.getHttpPort(), x.getMessage());
             log.debug("Stacktrace:", x);
         }
     }

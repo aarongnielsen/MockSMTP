@@ -32,7 +32,7 @@ public class AppStarter
 
         // start SMTP server
         Server smtpServer = (Server) factory.getBean("smtpServer");
-        smtpServer.setPort(settings.getSmtpPort());
+        smtpServer.setSettings(settings);
         smtpServer.start();
 
         // load demo data if requested
@@ -42,7 +42,7 @@ public class AppStarter
 
         // start HTTP server for front end
         Server httpServer = (Server) factory.getBean("httpServer");
-        httpServer.setPort(settings.getHttpPort());
+        httpServer.setSettings(settings);
         httpServer.start();
     }
 }
