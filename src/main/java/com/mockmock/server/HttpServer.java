@@ -59,12 +59,12 @@ public class HttpServer implements com.mockmock.server.Server {
         http.setHandler(handlerList);
 
         try {
-            log.info("Starting http server on port {}", port);
+            log.info("Starting HTTP server on http://localhost:{}", port);
             http.start();
             http.join();
         } catch (Exception x) {
-            log.error("Could not start http server. Maybe port {} is already in use?", port);
-            log.debug("HTTP server startup error stacktrace:", x);
+            log.error("Could not start HTTP server. Maybe port {} is already in use? {}", port, x.getMessage());
+            log.debug("Stacktrace:", x);
         }
     }
 
