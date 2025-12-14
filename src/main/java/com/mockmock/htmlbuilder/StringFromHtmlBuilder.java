@@ -25,8 +25,8 @@ public class StringFromHtmlBuilder implements HtmlBuilder {
 			return "";
 		}
 
-        String longAddresses;
         try {
+            String longAddresses;
             Address[] addresses = mimeMessage.getFrom();
             if (addresses != null) {
                 longAddresses = Arrays.stream(addresses)

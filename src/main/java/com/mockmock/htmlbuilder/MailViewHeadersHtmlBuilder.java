@@ -1,6 +1,8 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -8,39 +10,32 @@ import javax.mail.internet.MimeMessage;
 import java.util.Enumeration;
 
 @Service
-public class MailViewHeadersHtmlBuilder implements HtmlBuilder
-{
+@Slf4j
+public class MailViewHeadersHtmlBuilder implements HtmlBuilder {
+
+    @Setter
     private MockMail mockMail;
 
-    public String build()
-    {
+    public String build() {
         String output = "";
 
-        if(mockMail != null)
-        {
+        if (mockMail != null) {
             MimeMessage mimeMessage = mockMail.getMimeMessage();
-            try
-            {
+            try {
                 output += "<pre>\n";
-                Enumeration headers = mimeMessage.getAllHeaderLines();
-                while (headers.hasMoreElements())
-                {
+                Enumeration<?> headers = mimeMessage.getAllHeaderLines();
+                while (headers.hasMoreElements()) {
                     String header = (String) headers.nextElement();
-                    output += header + "<br />";
+                    output += header + "<br/>";
                 }
                 output += "</pre>";
             }
-            catch (MessagingException e)
-            {
-                e.printStackTrace();
+            catch (MessagingException msgX) {
+                log.error("error reading email headers", msgX);
             }
         }
 
         return output;
     }
 
-    public void setMockMail(MockMail mockMail)
-    {
-        this.mockMail = mockMail;
-    }
 }

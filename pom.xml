@@ -18,6 +18,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
 
+        <deps.jacocoMavenPlugin.version>0.8.14</deps.jacocoMavenPlugin.version>
+
         <deps.apacheCommons.text.version>1.14.0</deps.apacheCommons.text.version>
         <deps.javaMail.version>1.4</deps.javaMail.version>
         <deps.jetty.version>9.4.58.v20250814</deps.jetty.version>
@@ -28,8 +30,8 @@
         <deps.springboot.version>2.7.18</deps.springboot.version>
         <deps.subethamail.version>3.1.7</deps.subethamail.version>
 
-        <deps.junit.version>4.13.1</deps.junit.version>
-        <deps.mockito.version>1.8.5</deps.mockito.version>
+        <deps.junit.version>5.14.1</deps.junit.version>
+        <deps.mockito.version>4.11.0</deps.mockito.version>
     </properties>
 
     <build>
@@ -77,6 +79,26 @@
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${deps.jacocoMavenPlugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -159,9 +181,10 @@
 
         <!-- Test libraries ahead -->
 
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <version>${deps.junit.version}</version>
             <scope>test</scope>
         </dependency>
