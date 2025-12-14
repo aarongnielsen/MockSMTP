@@ -6,4 +6,5 @@ import com.mockmock.Settings;
 public interface Server {
     void setSettings(Settings settings);
     void start();
+    void stop();
 }

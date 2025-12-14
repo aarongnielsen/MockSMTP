@@ -20,21 +20,28 @@ public class SmtpServer implements Server {
     @Setter
     private MockMockMessageHandlerFactory handlerFactory;
 
+    private SMTPServer smtpServerImpl;
+
     @Override
     public void start() {
         // start the smtp server!
-        SMTPServer server = new SMTPServer(handlerFactory);
-        server.setSoftwareName("MockSMTP");
-        server.setPort(settings.getSmtpPort());
+        smtpServerImpl = new SMTPServer(handlerFactory);
+        smtpServerImpl.setSoftwareName("MockSMTP");
+        smtpServerImpl.setPort(settings.getSmtpPort());
 
         try {
-            server.start();
+            smtpServerImpl.start();
             log.info("MockSMTP is listening for SMTP on port {}", settings.getSmtpPort());
         } catch (Exception x) {
             log.error("Could not start SMTP server. Maybe port {} is already in use? {}", settings.getSmtpPort(), x.getMessage());
             log.debug("Stacktrace:", x);
             throw new RuntimeException(x);
         }
+    }
+
+    @Override
+    public void stop() {
+        smtpServerImpl.stop();
     }
 
 }

@@ -36,9 +36,11 @@ public class HttpServer implements com.mockmock.server.Server {
     @Setter
     private ViewHeadersHandler viewHeadersHandler;
 
+    private Server httpServerImpl;
+
     @Override
     public void start() {
-        Server http = new Server(settings.getHttpPort());
+        httpServerImpl = new Server(settings.getHttpPort());
 
         // set up the folder of web-facing static files (e.g. images, styles, scripts)
         ResourceHandler resourceHandler = new ResourceHandler();
@@ -59,10 +61,10 @@ public class HttpServer implements com.mockmock.server.Server {
         };
         HandlerList handlerList = new HandlerList();
         handlerList.setHandlers(handlers);
-        http.setHandler(handlerList);
+        httpServerImpl.setHandler(handlerList);
 
         try {
-            http.start();
+            httpServerImpl.start();
             log.info("Starting HTTP server on http://localhost:{}", settings.getHttpPort());
         } catch (Exception x) {
             log.error("Could not start HTTP server. Maybe port {} is already in use? {}", settings.getHttpPort(), x.toString());
@@ -99,6 +101,15 @@ public class HttpServer implements com.mockmock.server.Server {
     @Autowired
     public void setAttachmentHandler(AttachmentHandler attachmentHandler) {
         this.attachmentHandler = attachmentHandler;
+    }
+
+    @Override
+    public void stop() {
+        try {
+            httpServerImpl.stop();
+        } catch (Exception x) {
+            log.error("error stopping HTTP server", x);
+        }
     }
 
 }
