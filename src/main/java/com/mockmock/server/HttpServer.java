@@ -2,6 +2,7 @@ package com.mockmock.server;
 
 import com.mockmock.Settings;
 import com.mockmock.http.*;
+import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
@@ -14,28 +15,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Setter
 @Slf4j
 public class HttpServer implements com.mockmock.server.Server {
 
+    @Autowired
     private IndexHandler indexHandler;
+
+    @Autowired
     private MailDetailHandler mailDetailHandler;
+
+    @Autowired
     private MailDetailHtmlHandler mailDetailHtmlHandler;
+
+    @Autowired
     private MailDeleteHandler mailDeleteHandler;
+
+    @Autowired
     private DeleteHandler deleteHandler;
+
+    @Autowired
     private AttachmentHandler attachmentHandler;
 
     @Autowired
-    @Setter
-    private Settings settings;
-
-    @Autowired
-    @Setter
     private ViewRawMessageHandler viewRawMessageHandler;
 
     @Autowired
-    @Setter
     private ViewHeadersHandler viewHeadersHandler;
 
+    @Autowired
+    private Settings settings;
+
+    @Setter(AccessLevel.NONE)
     private Server httpServerImpl;
 
     @Override
@@ -71,36 +82,6 @@ public class HttpServer implements com.mockmock.server.Server {
             log.debug("Stacktrace:", x);
             throw new RuntimeException(x);
         }
-    }
-
-    @Autowired
-    public void setIndexHandler(IndexHandler indexHandler) {
-        this.indexHandler = indexHandler;
-    }
-
-	@Autowired
-	public void setMailDetailHandler(MailDetailHandler mailDetailHandler) {
-		this.mailDetailHandler = mailDetailHandler;
-	}
-
-	@Autowired
-	public void setMailDetailHtmlHandler(MailDetailHtmlHandler mailDetailHtmlHandler) {
-		this.mailDetailHtmlHandler = mailDetailHtmlHandler;
-	}
-
-	@Autowired
-	public void setMailDeleteHandler(MailDeleteHandler mailDeleteHandler) {
-		this.mailDeleteHandler = mailDeleteHandler;
-	}
-
-    @Autowired
-    public void setDeleteHandler(DeleteHandler deleteHandler) {
-        this.deleteHandler = deleteHandler;
-    }
-
-    @Autowired
-    public void setAttachmentHandler(AttachmentHandler attachmentHandler) {
-        this.attachmentHandler = attachmentHandler;
     }
 
     @Override

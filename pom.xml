@@ -23,7 +23,7 @@
         <deps.apacheCommons.text.version>1.14.0</deps.apacheCommons.text.version>
         <deps.javaMail.version>1.4</deps.javaMail.version>
         <deps.jetty.version>9.4.58.v20250814</deps.jetty.version>
-        <deps.lombok.version>1.18.20</deps.lombok.version>
+        <deps.lombok.version>1.18.34</deps.lombok.version>
         <deps.picocli.version>4.7.7</deps.picocli.version>
         <deps.slf4j.version>1.7.2</deps.slf4j.version>
         <deps.spring.version>4.1.2.RELEASE</deps.spring.version>
@@ -181,10 +181,9 @@
 
         <!-- Test libraries ahead -->
 
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter-params</artifactId>
             <version>${deps.junit.version}</version>
             <scope>test</scope>
         </dependency>

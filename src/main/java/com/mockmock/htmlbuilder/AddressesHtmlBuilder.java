@@ -1,17 +1,18 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 
 @Service
-public class AddressesHtmlBuilder implements HtmlBuilder
-{
+@Setter
+public class AddressesHtmlBuilder implements HtmlBuilder {
+
     private MockMail mockMail;
 
-    public String build()
-    {
+    public String build() {
         String output = "";
 
         StringFromHtmlBuilder fromHtmlBuilder = new StringFromHtmlBuilder();
@@ -27,23 +28,17 @@ public class AddressesHtmlBuilder implements HtmlBuilder
 
         recipientHtmlBuilder.setRecipientType(MimeMessage.RecipientType.CC);
         String ccOutput = recipientHtmlBuilder.build();
-        if(ccOutput.length() > 0)
-        {
+        if(!ccOutput.isEmpty()) {
             output += "CC: " + ccOutput + "<br />\n";
         }
 
         recipientHtmlBuilder.setRecipientType(MimeMessage.RecipientType.BCC);
         String bccOutput = recipientHtmlBuilder.build();
-        if(bccOutput.length() > 0)
-        {
+        if(!bccOutput.isEmpty()) {
             output += "BCC: " + bccOutput + "<br />\n";
         }
 
         return output;
     }
 
-    public void setMockMail(MockMail mockMail)
-    {
-        this.mockMail = mockMail;
-    }
 }

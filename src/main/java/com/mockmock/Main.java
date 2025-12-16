@@ -59,6 +59,7 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
                 }
             } catch (Exception x) {
                 exitCode = 2;
+                return;
             }
 
             try {
