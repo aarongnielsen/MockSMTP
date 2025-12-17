@@ -1,30 +1,27 @@
 package com.mockmock.http;
 
-import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
-public class AttachmentHandler extends BaseHandler
-{
-    private final String pattern = "^/view/(-?[0-9]+)/attachment/([0-9]+)/?$";
+public class AttachmentHandler extends BaseHandler {
 
-    private MailQueue mailQueue;
+    @Override
+    protected String getUrlPathPattern() {
+        return "^/view/(-?[0-9]+)/attachment/([0-9]+)/?$";
+    }
 
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse response) throws IOException, ServletException
     {
-        if(!isMatch(target)) {
+        if(!isUrlPathMatch(target)) {
             return;
         }
 
@@ -54,16 +51,6 @@ public class AttachmentHandler extends BaseHandler
     }
 
     /**
-     * Checks if this handler should be used for the given target
-     * @param target String
-     * @return boolean
-     */
-    private boolean isMatch(String target)
-    {
-        return target.matches(pattern);
-    }
-
-    /**
      * Returns the mail id if it is part of the target
      * @param target String
      * @return int
@@ -76,25 +63,4 @@ public class AttachmentHandler extends BaseHandler
         return getRegexMatchedGroup(target, 2);
     }
 
-    private int getRegexMatchedGroup(String target, int groupNumber) {
-        Pattern compiledPattern = Pattern.compile(pattern);
-
-        Matcher matcher = compiledPattern.matcher(target);
-        if(matcher.find()) {
-            String result = matcher.group(groupNumber);
-            try {
-                return Integer.parseInt(result);
-            }
-            catch (NumberFormatException e) {
-                return 0;
-            }
-        }
-
-        return 0;
-    }
-
-    @Autowired
-    public void setMailQueue(MailQueue mailQueue) {
-        this.mailQueue = mailQueue;
-    }
 }

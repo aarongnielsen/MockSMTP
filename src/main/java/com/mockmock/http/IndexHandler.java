@@ -3,7 +3,6 @@ package com.mockmock.http;
 import com.mockmock.htmlbuilder.FooterHtmlBuilder;
 import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
 import com.mockmock.htmlbuilder.MailListHtmlBuilder;
-import com.mockmock.mail.MailQueue;
 import lombok.Setter;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +26,16 @@ public class IndexHandler extends BaseHandler {
     @Autowired
     private MailListHtmlBuilder mailListHtmlBuilder;
 
-    @Autowired
-    private MailQueue mailQueue;
+    @Override
+    protected String getUrlPathPattern() {
+        return "^/$";
+    }
 
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse response) throws IOException, ServletException
     {
-        if(!target.equals("/"))
-        {
+        if(!isUrlPathMatch(target)) {
             return;
         }
 

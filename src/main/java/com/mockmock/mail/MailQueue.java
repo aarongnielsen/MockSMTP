@@ -89,7 +89,7 @@ public class MailQueue  {
     /** Trims the mail queue so that the number of messages does not exceed the maximum setting. **/
     private void trimQueue() {
         int maxMailQueueSize = settings.getMaxMailQueueSize();
-        if (maxMailQueueSize < 0) {
+        if (maxMailQueueSize <= 0) {
             return;
         }
 
