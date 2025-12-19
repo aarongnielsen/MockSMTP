@@ -37,8 +37,10 @@ public class StringRecipientHtmlBuilder implements HtmlBuilder {
                     .collect(Collectors.joining(", "));
 
             String shortAddresses = longAddresses;
-            if(maxLength > 0 && longAddresses.length() > maxLength) {
-                shortAddresses = longAddresses.substring(0, maxLength) + "...";
+            if (maxLength > 0) {
+                if (longAddresses.length() > maxLength) {
+                    shortAddresses = longAddresses.substring(0, maxLength) + "...";
+                }
             }
 
             return "<span title=\"" + longAddresses + "\">" + shortAddresses + "</title>";
