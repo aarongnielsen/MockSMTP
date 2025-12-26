@@ -1,9 +1,6 @@
 package com.mockmock.http;
 
 import com.mockmock.Settings;
-import com.mockmock.htmlbuilder.FooterHtmlBuilder;
-import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
-import com.mockmock.htmlbuilder.MailViewHtmlBuilder;
 import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
@@ -14,18 +11,22 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.stream.Stream;
 
-public class MailDetailHandlerTest {
+public class ViewHeadersHandlerTest {
 
     @ParameterizedTest
     @MethodSource("handle_testByPathAndIndex_arguments")
-    public void handle_testByPathAndIndex(String urlPath, boolean expectedHandled) throws ServletException, IOException {
+    public void handle_testByPathAndIndex(String urlPath, int mailIndex, boolean expectedHandled) throws ServletException, IOException, MessagingException {
         // make up a mock mail queue
         int numberOfMessagesToGenerate = 5;
         MailQueue mailQueue = new MailQueue();
@@ -40,19 +41,10 @@ public class MailDetailHandlerTest {
         StringWriter responseStringWriter = new StringWriter();
         Mockito.doReturn(new PrintWriter(responseStringWriter)).when(jettyResponse).getWriter();
 
-        MailDetailHandler mailDetailHandler = new MailDetailHandler();
-        mailDetailHandler.setMailQueue(mailQueue);
-        HeaderHtmlBuilder mockHeaderHtmlBuilder = Mockito.mock(HeaderHtmlBuilder.class);
-        Mockito.doReturn("").when(mockHeaderHtmlBuilder).build();
-        mailDetailHandler.setHeaderHtmlBuilder(mockHeaderHtmlBuilder);
-        FooterHtmlBuilder mockFooterHtmlBuilder = Mockito.mock(FooterHtmlBuilder.class);
-        Mockito.doReturn("").when(mockFooterHtmlBuilder).build();
-        mailDetailHandler.setFooterHtmlBuilder(mockFooterHtmlBuilder);
-        MailViewHtmlBuilder mockMailViewHtmlBuilder = Mockito.mock(MailViewHtmlBuilder.class);
-        Mockito.doReturn("Body").when(mockMailViewHtmlBuilder).build();
-        mailDetailHandler.setMailViewHtmlBuilder(mockMailViewHtmlBuilder);
+        ViewHeadersHandler viewHeadersHandler = new ViewHeadersHandler();
+        viewHeadersHandler.setMailQueue(mailQueue);
 
-        mailDetailHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
+        viewHeadersHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 
         // see if it was handled correctly
         if (!expectedHandled) {
@@ -60,22 +52,23 @@ public class MailDetailHandlerTest {
             Assertions.assertEquals("",  responseStringWriter.toString());
         } else {
             Assertions.assertTrue(jettyRequest.isHandled());
-            Assertions.assertEquals("Body", responseStringWriter.toString());
+            Assertions.assertEquals("Message Index: " + mailIndex + "\nSome Header: Some Value", responseStringWriter.toString());
         }
     }
 
     private static Stream<Arguments> handle_testByPathAndIndex_arguments() {
         return Stream.of(
-                Arguments.of("/invalid/path", false),
-                Arguments.of("/view/0", false),   // indexes start at 1
-                Arguments.of("/view/4", true),    // 4th from the start
-                Arguments.of("/view/-4", true),   // 4th from the end
-                Arguments.of("/view/6", false),   // 6th from the start (out of bounds)
-                Arguments.of("/view/-6", false)   // 6th from the end (out of bounds)
+                Arguments.of("/invalid/path", 1, false),
+                Arguments.of("/view/headers/0", 1, false),   // indexes start at 1
+                Arguments.of("/view/headers/1", 2, false),   // MockMail with no MIME message
+                Arguments.of("/view/headers/4", 4, true),     // 4th from the start
+                Arguments.of("/view/headers/-4", 2, true),    // 4th from the end
+                Arguments.of("/view/headers/6", 1, false),   // 6th from the start (out of bounds)
+                Arguments.of("/view/headers/-6", 1, false)   // 6th from the end (out of bounds)
         );
     }
 
-    private static MockMail createMockMail(int index) {
+    private static MockMail createMockMail(int index) throws MessagingException {
         MockMail mockMail = new MockMail();
         mockMail.setId(UUID.randomUUID());
         mockMail.setFrom("sender@example.com");
@@ -83,6 +76,15 @@ public class MailDetailHandlerTest {
         mockMail.setSubject("Email " + index);
         mockMail.setBody("Body " + index);
         mockMail.setReceivedTime(System.currentTimeMillis() + index);
+        if (index != 1) {
+            MimeMessage mockMimeMessage = Mockito.mock(MimeMessage.class);
+            Vector<String> headers = new Vector<>(Arrays.asList(
+                    "Message Index: " + index,
+                    "Some Header: Some Value"
+            ));
+            Mockito.doReturn(headers.elements()).when(mockMimeMessage).getAllHeaderLines();
+            mockMail.setMimeMessage(mockMimeMessage);
+        }
         return mockMail;
     }
 }

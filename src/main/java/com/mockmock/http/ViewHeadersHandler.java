@@ -30,12 +30,12 @@ public class ViewHeadersHandler extends BaseHandler {
             return;
         }
         int mailIndex = getMailIndex(target);
-        if(mailIndex == 0) {
+        if (mailIndex == 0) {
             return;
         }
 
         MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
-        if(mockMail == null) {
+        if (mockMail == null) {
             return;
         }
 
