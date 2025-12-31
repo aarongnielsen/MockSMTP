@@ -3,6 +3,7 @@ package com.mockmock.htmlbuilder;
 import com.mockmock.mail.MockMail;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -26,7 +27,7 @@ public class MailViewHeadersHtmlBuilder implements HtmlBuilder {
                 Enumeration<?> headers = mimeMessage.getAllHeaderLines();
                 while (headers.hasMoreElements()) {
                     String header = (String) headers.nextElement();
-                    output += header + "<br/>";
+                    output += StringEscapeUtils.escapeHtml4(header) + "<br/>";
                 }
                 output += "</pre>";
             }
