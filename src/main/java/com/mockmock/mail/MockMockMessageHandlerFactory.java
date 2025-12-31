@@ -80,8 +80,7 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
         /** Called to store the message data, upon receiving the {@code DATA} command in an SMTP exchange. **/
         @Override
         public void data(InputStream data) throws RejectException, IOException {
-            Util util = new Util();
-            String rawMail = util.getStreamContentsAsString(data);
+            String rawMail = Util.getStreamContentsAsString(data);
             mockMail.setRawMail(rawMail);
 
             Session session = Session.getDefaultInstance(new Properties());
@@ -99,9 +98,9 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
                         BodyPart bodyPart = multipart.getBodyPart(i);
                         String contentType = bodyPart.getContentType();
                         if (contentType.matches("text/plain.*")) {
-                            mockMail.setBody(util.getStreamContentsAsString(bodyPart.getInputStream()));
+                            mockMail.setBody(Util.getStreamContentsAsString(bodyPart.getInputStream()));
                         } else if (contentType.matches("text/html.*")) {
-                            mockMail.setBodyHtml(util.getStreamContentsAsString(bodyPart.getInputStream()));
+                            mockMail.setBodyHtml(Util.getStreamContentsAsString(bodyPart.getInputStream()));
                         } else if (bodyPart.getHeader("Content-Disposition") != null) {
                             String attachmentContentType = bodyPart.getHeader("Content-Type")[0];
                             int indexOfSemicolon = attachmentContentType.indexOf(';');
@@ -118,13 +117,13 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
                             MockMail.Attachment attachment = new MockMail.Attachment();
                             attachment.setContentType(attachmentContentType);
                             attachment.setFilename(contentDispositionFilename);
-                            attachment.setContents(new Util().getStreamContentsAsByteArray(bodyPart.getInputStream()));
+                            attachment.setContents(Util.getStreamContentsAsByteArray(bodyPart.getInputStream()));
                             mockMail.getAttachments().add(attachment);
                         }
                     }
                 } else if (messageContent instanceof InputStream) {
                     InputStream mailContent = (InputStream) messageContent;
-                    mockMail.setBody(util.getStreamContentsAsString(mailContent));
+                    mockMail.setBody(Util.getStreamContentsAsString(mailContent));
                 } else if (messageContent instanceof String) {
                     String contentType = message.getContentType();
 

@@ -21,7 +21,6 @@ public class DemoDataLoader {
     public void load() {
         // build email message to send
         final String resourceBasePath = "/demodata/";
-        Util util = new Util();
         for (int i = 1; i <= 3; i++) {
             // build a message to send:
             StringBuilder stringBuilder = new StringBuilder();
@@ -34,7 +33,7 @@ public class DemoDataLoader {
 
             //  - read mail message contents
             String resourceFile = resourceBasePath + "email-message" + i + ".txt";
-            String emailMessage = util.getStreamContentsAsString(getClass().getResourceAsStream(resourceFile));
+            String emailMessage = Util.getStreamContentsAsString(getClass().getResourceAsStream(resourceFile));
             stringBuilder.append(emailMessage);
 
             //  - close SMTP session

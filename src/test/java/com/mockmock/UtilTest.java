@@ -16,7 +16,7 @@ public class UtilTest {
         Mockito.when(inputStream.read(Mockito.any(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bytesToWriteSuccessfully)
                 .thenThrow(new IOException());
-        byte[] byteArray = new Util().getStreamContentsAsByteArray(inputStream);
+        byte[] byteArray = Util.getStreamContentsAsByteArray(inputStream);
         Assertions.assertEquals(bytesToWriteSuccessfully, byteArray.length);
     }
 
