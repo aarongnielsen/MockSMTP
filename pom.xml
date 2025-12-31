@@ -179,7 +179,7 @@
             <version>${deps.subethamail.version}</version>
         </dependency>
 
-        <!-- Test libraries ahead -->
+        <!-- test libraries -->
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -190,7 +190,7 @@
 
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <artifactId>mockito-inline</artifactId>
             <version>${deps.mockito.version}</version>
             <scope>test</scope>
         </dependency>
