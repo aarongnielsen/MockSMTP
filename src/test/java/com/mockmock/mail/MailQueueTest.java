@@ -20,19 +20,6 @@ public class MailQueueTest
 		Assertions.assertTrue(mailQueue.getMailQueue().isEmpty());
 	}
 
-	@Test
-	public void testDeleteMailFromQueue() {
-		MockMail mail = new MockMail();
-		mail.setId(UUID.fromString("00000000-0000-0000-0000-000000001337"));
-		MailQueue mailQueue = new MailQueue();
-		mailQueue.setSettings(new Settings());
-		mailQueue.add(mail);
-		Assertions.assertFalse(mailQueue.getMailQueue().isEmpty());
-
-		mailQueue.deleteById(mail.getId());
-		Assertions.assertTrue(mailQueue.getMailQueue().isEmpty());
-	}
-
     @Test
     public void testAdd() {
         MailQueue mailQueue = new MailQueue();

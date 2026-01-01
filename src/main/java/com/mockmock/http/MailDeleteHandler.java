@@ -28,20 +28,24 @@ public class MailDeleteHandler extends BaseHandler {
 		}
 
         int mailIndex = getMailIndex(target);
-        if(mailIndex == 0) {
+        if (mailIndex == 0) {
             return;
         }
 
-        MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
-        if(mockMail == null) {
-            return;
-        }
+		MockMail mockMail = this.mailQueue.getByIndex(mailIndex);
+		if (mockMail == null) {
+			return;
+		}
 
-		this.mailQueue.deleteById(mockMail.getId());
+		boolean isDeleted = this.mailQueue.deleteByIndex(mailIndex);
+		String responseMessage = (isDeleted ?
+				"Mail message " + mockMail.getId() + " has been deleted" :
+				"no message to delete at index " + mailIndex
+		);
 
 		response.setHeader(HttpHeader.LOCATION.asString(), "/");
 		response.setStatus(HttpStatus.FOUND_302);
-		response.getWriter().println("Mail message " + mockMail.getId() + " has been deleted");
+		response.getWriter().println(responseMessage);
 		request.setHandled(true);
 	}
 
