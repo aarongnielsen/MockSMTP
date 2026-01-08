@@ -102,7 +102,7 @@ public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
                         } else if (contentType.matches("text/html.*")) {
                             mockMail.setBodyHtml(Util.getStreamContentsAsString(bodyPart.getInputStream()));
                         } else if (bodyPart.getHeader("Content-Disposition") != null) {
-                            String attachmentContentType = bodyPart.getHeader("Content-Type")[0];
+                            String attachmentContentType = bodyPart.getContentType(); //.getHeader("Content-Type")[0];
                             int indexOfSemicolon = attachmentContentType.indexOf(';');
                             if (indexOfSemicolon != -1) {
                                 attachmentContentType = attachmentContentType.substring(0, indexOfSemicolon);

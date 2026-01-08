@@ -12,6 +12,9 @@ import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.subethamail.smtp.MessageContext;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -133,6 +136,56 @@ public class MockMockMessageHandlerFactoryTest {
                     Arguments.of("text/html", false, true),
                     Arguments.of("text/somethingelse", false, false)
             );
+        }
+
+        @ParameterizedTest
+        @MethodSource("data_handleMultipartMessages_arguments")
+        public void data_handleMultipartMessages(
+                String contentType,
+                String contentDisposition,
+                String contents,
+                boolean expectedBodyTextSet,
+                boolean expectedBodyHtmlSet,
+                String expectedAttachmentContentType,
+                String expectedAttachmentFilename
+        ) throws IOException {
+            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
+            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+
+            try (MockedConstruction<MimeMessage> mockMimeMessageService = Mockito.mockConstruction(MimeMessage.class, (mockObject, context) -> {
+                //  - intercept the construction of new MimeMessage objects so we get valid test cases
+                Multipart multipart = Mockito.mock(Multipart.class);
+                Mockito.doReturn(1).when(multipart).getCount();
+                Mockito.doReturn(createMimeMessageBodyPart(contentType, contentDisposition, contents)).when(multipart).getBodyPart(Mockito.anyInt());
+                Mockito.doReturn(multipart).when(mockObject).getContent();
+            })) {
+                //  - run the handler and ensure the message body is set appropriately
+                mockMockHandler.data(new ByteArrayInputStream(new byte[0]));
+                Assertions.assertEquals(expectedBodyTextSet ? contents : null, mockMockHandler.mockMail.getBody());
+                Assertions.assertEquals(expectedBodyHtmlSet ? contents : null, mockMockHandler.mockMail.getBodyHtml());
+                if (expectedAttachmentContentType != null) {
+                    Assertions.assertEquals(expectedAttachmentContentType, mockMockHandler.mockMail.getAttachments().get(0).getContentType());
+                    Assertions.assertEquals(expectedAttachmentFilename, mockMockHandler.mockMail.getAttachments().get(0).getFilename());
+                }
+            }
+        }
+
+        private Stream<Arguments> data_handleMultipartMessages_arguments() {
+            return Stream.of(
+                    Arguments.of("text/plain", "", "bodytext", true, false, null, null),
+                    Arguments.of("text/html", "", "bodytext", false, true, null, null),
+                    Arguments.of("image/png", "attachment", "bodytext", false, false, "image/png", "attachment"),
+                    Arguments.of("image/png; encoding=random", "attachment; filename=\"icon.png\"", "bodytext", false, false, "image/png", "icon.png")
+            );
+        }
+
+        private BodyPart createMimeMessageBodyPart(String contentType, String contentDisposition, String contents) throws MessagingException, IOException {
+            BodyPart bodyPart = Mockito.mock(BodyPart.class);
+            Mockito.doReturn(contentType).when(bodyPart).getContentType();
+            Mockito.doReturn(new String[] { contentDisposition }).when(bodyPart).getHeader(Mockito.eq("Content-Disposition"));
+            Mockito.doReturn(new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8))).when(bodyPart).getInputStream();
+            return bodyPart;
         }
     }
 }

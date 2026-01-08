@@ -20,17 +20,13 @@ public class HeaderHtmlBuilder implements HtmlBuilder {
                 "  <div class=\"navbar navbar-inverse navbar-fixed-top\">\n" +
                 "    <div class=\"navbar-inner\">\n" +
                 "      <div class=\"container\">\n" +
-                "        <a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">\n" +
-                "            <span class=\"icon-bar\"></span>\n" +
-                "            <span class=\"icon-bar\"></span>\n" +
-                "          </a>\n" +
-                "          <a class=\"brand\" href=\"/\">MockMock</a>\n" +
-                "          <div class=\"nav-collapse collapse\">\n" +
-                "            <ul class=\"nav\">\n" +
-                "              <li class=\"active\"><a href=\"/\">Home</a></li>\n" +
-                "              <li><a href=\"https://github.com/tweakers-dev/MockMock\">MockMock on Github</a></li>\n" +
-                "            </ul>\n" +
-                "          </div>\n" +
+                "        <a class=\"brand\" href=\"/\">MockMock</a>\n" +
+                "        <div class=\"nav-collapse collapse\">\n" +
+                "          <ul class=\"nav\">\n" +
+                "            <li class=\"active\"><a href=\"/\">Home</a></li>\n" +
+                "            <li><a href=\"https://github.com/tweakers-dev/MockMock\">MockMock on Github</a></li>\n" +
+                "          </ul>\n" +
+                "        </div>\n" +
                 "      </div>\n" +
                 "    </div>\n" +
                 "  </div>\n";

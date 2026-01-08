@@ -19,10 +19,10 @@ public class MailListHtmlBuilder implements HtmlBuilder {
         String output = "<div class=\"container\">\n";
 
         if(mailQueue == null || mailQueue.isEmpty()) {
-            output += "  <h2>No emails in queue</h2>\n";
+            output += "  <h1>No emails in queue</h1>\n";
         } else {
             String mailText = mailQueue.size() == 1 ? "email" : "emails";
-            output += "  <h1>You have "  + mailQueue.size() + " " + mailText + "! <small class=\"deleteLink\"><a class=\"delete\" href=\"/mail/delete/all\">Delete all</a></small></h1>\n";
+            output += "  <h1>You have "  + mailQueue.size() + " " + mailText + "! <a class=\"heading-action\" href=\"/mail/delete/all\">Delete all</a></h1>\n";
             output += "  <table class=\"messages-list table table-striped\">\n";
             output += "    <thead>\n";
             output += "      <th>From</th>\n";
