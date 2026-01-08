@@ -42,7 +42,7 @@ public class AttachmentHandler extends BaseHandler {
 
         MockMail.Attachment attachment = mockMail.getAttachments().get(attachmentIndex - 1);
         response.setContentType(attachment.getContentType());
-        response.setHeader("Content-Disposition", "filename=\"" + attachment.getFilename() + "\"");
+        response.setHeader("Content-Disposition", "filename=\"email_" + mailIndex + "_" + attachment.getFilename() + "\"");
         response.setStatus(HttpServletResponse.SC_OK);
 
         response.getOutputStream().write(attachment.getContents());

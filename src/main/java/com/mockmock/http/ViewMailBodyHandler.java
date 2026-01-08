@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Service
-public class MailDetailHtmlHandler extends BaseHandler {
+public class ViewMailBodyHandler extends BaseHandler {
 
     @Override
     protected String getUrlPathPattern() {
@@ -38,10 +38,12 @@ public class MailDetailHtmlHandler extends BaseHandler {
         setDefaultResponseOptions(response);
 		if (mockMail.getBodyHtml() != null) {
             response.getWriter().print(mockMail.getBodyHtml());
+            response.setHeader("Content-Disposition", "inline; filename=\"email_" + mailIndex + "_body.html\"");
             request.setHandled(true);
 		}
         else if (mockMail.getBody() != null) {
             response.setContentType("text/plain;charset=utf-8");
+            response.setHeader("Content-Disposition", "inline; filename=\"email_" + mailIndex + "_body.txt\"");
             response.getWriter().print(mockMail.getBody());
             request.setHandled(true);
         }

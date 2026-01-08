@@ -37,6 +37,7 @@ public class ViewRawMessageHandler extends BaseHandler {
 
         httpServletResponse.setContentType("text/plain;charset=utf-8");
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        httpServletResponse.setHeader("Content-Disposition", "inline; filename=\"email_" + mailIndex + "_raw.msg\"");
         httpServletResponse.getWriter().write(mockMail.getRawMail());
         request.setHandled(true);
     }

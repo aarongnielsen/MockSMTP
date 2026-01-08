@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -53,6 +54,7 @@ public class ViewHeadersHandler extends BaseHandler {
 
             httpServletResponse.setContentType("text/plain;charset=utf-8");
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            httpServletResponse.setHeader("Content-Disposition", "filename=\"email_" + mailIndex + "_headers.txt\"");
             httpServletResponse.getWriter().write(headerText);
             request.setHandled(true);
         } catch (MessagingException e) {

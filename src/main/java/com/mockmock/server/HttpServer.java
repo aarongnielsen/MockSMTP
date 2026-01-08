@@ -26,7 +26,7 @@ public class HttpServer implements com.mockmock.server.Server {
     private MailDetailHandler mailDetailHandler;
 
     @Autowired
-    private MailDetailHtmlHandler mailDetailHtmlHandler;
+    private ViewMailBodyHandler mailDetailHtmlHandler;
 
     @Autowired
     private MailDeleteHandler mailDeleteHandler;

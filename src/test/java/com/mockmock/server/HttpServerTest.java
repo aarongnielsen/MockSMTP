@@ -62,7 +62,7 @@ public class HttpServerTest {
 
         httpServer.setIndexHandler(new IndexHandler());
         httpServer.setMailDetailHandler(new MailDetailHandler());
-        httpServer.setMailDetailHtmlHandler(new MailDetailHtmlHandler());
+        httpServer.setMailDetailHtmlHandler(new ViewMailBodyHandler());
         httpServer.setMailDeleteHandler(new MailDeleteHandler());
         httpServer.setDeleteHandler(deleteHandler);
         httpServer.setAttachmentHandler(new AttachmentHandler());
