@@ -17,7 +17,7 @@ import picocli.CommandLine;
 @RequiredArgsConstructor
 public class Main implements CommandLineRunner, ExitCodeGenerator {
 
-    public static final String VERSION_NUMBER = "1.5.0-dev";
+    public static final String VERSION_NUMBER = "1.5.0";
 
     // methods overridden for picoCLI:
     //  - inject Spring bean factory and application settings at construction-time
