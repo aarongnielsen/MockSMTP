@@ -1,10 +1,10 @@
 package com.mockmock.server;
 
-/**
- * A simple interface for describing MockMock servers, such as the SMTP and HTTP server.
- */
-public interface Server
-{
-    public void setPort(int port);
-    public void start();
+import com.mockmock.Settings;
+
+/** A simple interface for describing MockSMTP servers, such as the SMTP and HTTP servers. **/
+public interface Server {
+    void setSettings(Settings settings);
+    void start();
+    void stop();
 }

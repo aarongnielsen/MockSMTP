@@ -1,112 +1,81 @@
 package com.mockmock.htmlbuilder;
 
 import com.mockmock.mail.MockMail;
-import org.apache.commons.lang.StringEscapeUtils;
+import lombok.Setter;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailViewHtmlBuilder implements HtmlBuilder
-{
-    private MailViewHeadersHtmlBuilder headersBuilder;
-    private AddressesHtmlBuilder addressesHtmlBuilder;
+public class MailViewHtmlBuilder implements HtmlBuilder {
 
+    @Autowired
+    @Setter
+    private MailHeaderSummaryHtmlBuilder mailHeaderSummaryHtmlBuilder;
+
+    @Setter
     private MockMail mockMail;
 
-    public void setMockMail(MockMail mockMail)
-    {
-        this.mockMail = mockMail;
-    }
+    @Setter
+    private int mailIndex;
 
-    public String build()
-    {
-        headersBuilder.setMockMail(mockMail);
-
-        addressesHtmlBuilder.setMockMail(mockMail);
+    public String build() {
+        mailHeaderSummaryHtmlBuilder.setMockMail(mockMail);
 
         String subjectOutput;
-        if(mockMail.getSubject() == null)
-        {
+        if (mockMail.getSubject() == null) {
             subjectOutput = "<em>No subject given</em>";
+        } else {
+            subjectOutput = StringEscapeUtils.escapeHtml4(mockMail.getSubject());
         }
-        else
-        {
-            subjectOutput = StringEscapeUtils.escapeHtml(mockMail.getSubject());
-        }
-
-		subjectOutput += " <small class=\"deleteLink\"><a href=\"/delete/" + mockMail.getId() + "\">Delete</a></small>";
+		subjectOutput += " <a class=\"heading-action\" href=\"/delete/" + mailIndex + "\">Delete</a>";
 
         String output = "<div class=\"container\">\n";
 
         output +=
-                "<h2>" + subjectOutput + "</h2>\n" +
+                "<h1>" + subjectOutput + "</h1>\n" +
                 "  <div class=\"row\">\n";
 
         output +=
                 "    <div class=\"span10\" name=\"addresses\">\n" +
-                "       <h3>Addresses</h3>\n" +
-                "       " + addressesHtmlBuilder.build() +
+                "      <h3>Headers <a class=\"heading-action\" href=\"/view/" + mailIndex + "/headers\">Show All</a></h3>\n" +
+                "      <pre class=\"well\" style=\"width: 100%;\">\n" + mailHeaderSummaryHtmlBuilder.build() + "</pre>\n" +
                 "    </div>\n";
 
-        output +=
-                "    <div class=\"span10\" name=\"headers\">\n" +
-                "       <h3>Mail headers</h3>\n" +
-                "       " + headersBuilder.build() +
-                "    </div>\n";
+        // display body in an iframe
+        String bodyHeading = (mockMail.getBodyHtml() != null ? "Body (HTML)" : "Body (plain text)");
+        bodyHeading += " <a class=\"heading-action\" href=\"/view/" + mailIndex + "/body\">Open</a>";
+        output += "    <div class=\"span10\" name=\"bodyHtmlFormatted\">\n" +
+                  "      <h3>" + bodyHeading + "</h3>\n" +
+                  "      <iframe class=\"well\" src=\"/view/" + mailIndex + "/body\" style=\"width: 100%; height: 500px; overflow: scroll;\" name=\"bodyHTML_iFrame\"></iframe>\n" +
+                  "    </div>";
 
-        if(mockMail.getBody() != null)
-        {
-            output +=
-                    "    <div class=\"span10\" name=\"bodyPlainText\">\n" +
-                    "       <h3>Plain text body</h3>\n" +
-                    "       <div class=\"well\">" + StringEscapeUtils.escapeHtml(mockMail.getBody()) + "</div>\n" +
-                    "    </div>\n";
+        if (!mockMail.getAttachments().isEmpty()) {
+            StringBuilder attachmentListItems = new StringBuilder();
+            for (int i = 0; i < mockMail.getAttachments().size(); i++) {
+                int attachmentIndex = i + 1;
+                MockMail.Attachment attachment = mockMail.getAttachments().get(i);
+                attachmentListItems
+                        .append("        <li> ")
+                        .append("<a href=\"/view/").append(mailIndex).append("/attachment/").append(attachmentIndex).append("\">")
+                        .append(attachment.getFilename())
+                        .append("</a>")
+                        .append(" <em>(").append(attachment.getContentType()).append(", ").append(attachment.getContents().length).append(" bytes)</em>")
+                        .append(" </li>\n");
+            }
+            output += "    <div class=\"span10\" name=\"attachmentsList\">\n" +
+                      "      <h3>Attachments</h3>\n" +
+                      "      <ol style=\"margin-bottom: 20px;\">\n" +
+                      attachmentListItems +
+                      "      </ol>\n" +
+                      "    </div>\n";
+
         }
 
-        if(mockMail.getBodyHtml() != null)
-        {
-            output +=
-                    "    <div class=\"span10\" name=\"bodyHTML_Unformatted\">\n" +
-                    "       <h3>HTML body unformatted</h3>\n" +
-                    "       <div class=\"well\">" + StringEscapeUtils.escapeHtml(mockMail.getBodyHtml()) + "</div>\n" +
-                    "    </div>\n";
-
-            // also show a parsed version via an iframe
-            output +=
-                    "    <div class=\"span10\" name=\"iFrame\">\n" +
-                    "        <h3>HTML body formatted</h3>\n" +
-                    "        <iframe class=\"well\" src=\"/view/html/" + mockMail.getId() + "\" style=\"width: 780px; height: 700px; overflow: scroll;\" style=\"\" name=\"bodyHTML_iFrame\">\n" +
-                    "        </iframe>\n" +
-                    "    </div>";
-        }
-
-		// just output the raw mail so we're sure everything is on the screen
-		if(mockMail.getRawMail() != null)
-		{
-			// output complete raw mail
-			output +=
-					"    <div class=\"span10\" name=\"rawOutput\">\n" +
-							"       <h3>Complete raw mail output</h3>\n" +
-							"       <div class=\"well\">" + StringEscapeUtils.escapeHtml(mockMail.getRawMail()) + "</div>\n" +
-							"    </div>\n";
-		}
-
-        output +=
-                "  </div>\n";
-
-        output +=
-                "</div>\n";
+        output += "  </div>\n" +
+                  "</div>\n";
 
         return output;
     }
 
-    @Autowired
-    public void setMailViewHeadersHtmlBuilder(MailViewHeadersHtmlBuilder mailViewHeadersHtmlBuilder) {
-        this.headersBuilder = mailViewHeadersHtmlBuilder;
-    }
-
-    @Autowired
-    public void setAddressesHtmlBuilder(AddressesHtmlBuilder addressesHtmlBuilder) {
-        this.addressesHtmlBuilder = addressesHtmlBuilder;
-    }
 }

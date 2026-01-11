@@ -1,130 +1,135 @@
 package com.mockmock.mail;
 
-import com.google.common.eventbus.Subscribe;
-import com.mockmock.AppStarter;
 import com.mockmock.Settings;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ListIterator;
+import java.util.UUID;
 
 @Service
-public class MailQueue
-{
-    private static ArrayList<MockMail> mailQueue = new ArrayList<>();
+@Getter
+public class MailQueue  {
 
+    // internal list is declared as an ArrayList rather than as an interface type,
+    // since we want to use the internal trimToSize() method when the list is truncated
+    private final ArrayList<MockMail> mailQueue = new ArrayList<>();
+
+    @Autowired
+    @Setter
     private Settings settings;
 
     /**
-     * Add a MockMail to the queue. Queue is sorted and trimmed right after it.
-     * @param mail The MockMail object to add to the queue
+     * Adds a mail message to the queue.
+     * This is implemented as an insertion-sort, so messages are always stored in order of the time they are received.
+     * If {@link Settings#setMaxMailQueueSize(int)} is set, the queue is also trimmed automatically.
+     *
+     * @param mail the mail message to add to the queue.
      */
-    @Subscribe
-    public void add(MockMail mail)
-    {
-        mailQueue.add(mail);
-        Collections.sort(mailQueue);
-        Collections.reverse(mailQueue);
-
-        trimQueue();
+    public synchronized void add(MockMail mail) {
+        // insert the new message into the list at the right index to keep the list sorted
+        synchronized (mailQueue) {
+            int insertIndex = Collections.binarySearch(mailQueue, mail);
+            if (insertIndex < 0) {
+                insertIndex = -insertIndex - 1;
+            }
+            mailQueue.add(insertIndex, mail);
+            trimQueue();
+        }
     }
 
-    /**
-     * @return Returns the complete mailQueue
-     */
-    public ArrayList<MockMail> getMailQueue()
-    {
-        return mailQueue;
+    public int findById(UUID id) {
+        for (int implIndex = 0; implIndex < mailQueue.size(); implIndex++) {
+            MockMail mockMail = mailQueue.get(implIndex);
+            if (mockMail.getId().equals(id)) {
+                return implIndex + 1;
+            }
+        }
+        return 0;
     }
 
     /**
      * Returns the MockMail that belongs to the given ID
-     * @param id The id of the mail mail that needs to be retrieved
+     * @param id The id of the mail that needs to be retrieved
      * @return Returns the MockMail when found or null otherwise
      */
-    public MockMail getById(long id)
-    {
-        for(MockMail mockMail : mailQueue)
-        {
-            if(mockMail.getId() == id)
-            {
-                return mockMail;
-            }
-        }
-
-        return null;
+    public MockMail getById(UUID id) {
+        int apiIndex = findById(id);
+        int implIndex = getImplIndex(apiIndex);
+        return mailQueue.get(implIndex);
     }
 
-    /**
-     * Returns the MockMail that was last send.
-     *
-     * @return  Returns the MockMail when found or null otherwise
-     */
-    public MockMail getLastSendMail()
-    {
-        if (mailQueue.size() == 0)
+    public MockMail getByIndex(int index) {
+        try {
+            int implIndex = getImplIndex(index);
+            return mailQueue.get(implIndex);
+        } catch (IndexOutOfBoundsException x) {
             return null;
-
-        return mailQueue.get(0);
+        }
     }
 
     /**
      * Removes all mail in the queue
      */
-    public void emptyQueue()
-    {
+    public void emptyQueue() {
         mailQueue.clear();
         mailQueue.trimToSize();
     }
 
-	/**
-	 * Removes the mail with the given id from the queue
-	 * @param id long
-	 * @return boolean
-	 */
-	public boolean deleteById(long id)
-	{
-		for(MockMail mockMail : mailQueue)
-		{
-			if(mockMail.getId() == id)
-			{
-				mailQueue.remove(mailQueue.indexOf(mockMail));
-				return true;
-			}
-		}
-
-		return false;
-	}
+    public boolean deleteByIndex(int index) {
+        try {
+            int implIndex = getImplIndex(index);
+            mailQueue.remove(implIndex);
+            return true;
+        } catch (IndexOutOfBoundsException x) {
+            return false;
+        }
+    }
 
     /**
-     * Trims the mail queue so there aren't too many mails in it.
+     * Given a 1-indexed or -1-indexed API index, returns the index in the underlying 0-indexed list implementation.
+     * For example, for a mail queue with 10 entries:
+     * <ul>
+     *   <li>{@code mailQueue.getImplIndex(1)} returns 0</li>
+     *   <li>{@code mailQueue.getImplIndex(10)} returns 9</li>
+     *   <li>{@code mailQueue.getImplIndex(-1)} returns 9</li>
+     *   <li>{@code mailQueue.getImplIndex(-4)} returns 6</li>
+     *   <li>{@code mailQueue.getImplIndex(0)} throws an exception</li>
+     *   <li>{@code mailQueue.getImplIndex(11)} throws an exception</li>
+     *   <li>{@code mailQueue.getImplIndex(-11)} throws an exception</li>
+     * </ul>
+     *
+     * @param apiIndex an index into the mail queue,
+     *     where 1,2,3... represent the earliest messages received,
+     *     and -1,-2,-3... represent the latest messages received.
+     * @return the corresponding 0-based index into the underlying list implementation.
+     * @throws IndexOutOfBoundsException if {@code apiIndex} is 0,
+     *     or if {@code |apiIndex|} is greater than the number of messages in the queue.
      */
-    private void trimQueue()
-    {
-        if(mailQueue.size() > settings.getMaxMailQueueSize())
-        {
-            for (ListIterator<MockMail> iter = mailQueue.listIterator(mailQueue.size()); iter.hasPrevious();)
-            {
-                iter.previous();
+    private int getImplIndex(int apiIndex) throws IndexOutOfBoundsException {
+        if (apiIndex > 0 && apiIndex <= mailQueue.size()) {
+            return apiIndex - 1;
+        } else if (apiIndex < 0 && -apiIndex <= mailQueue.size()) {
+            return mailQueue.size() + apiIndex;
+        }
+        throw new IndexOutOfBoundsException("invalid mail queue index: " + apiIndex);
+    }
 
-                if(mailQueue.size() <= settings.getMaxMailQueueSize())
-                {
-                    break;
-                }
-                else
-                {
-                    iter.remove();
-                }
-            }
+    /** Trims the mail queue so that the number of messages does not exceed the maximum setting. **/
+    private void trimQueue() {
+        int maxMailQueueSize = settings.getMaxMailQueueSize();
+        if (maxMailQueueSize <= 0) {
+            return;
         }
 
-        mailQueue.trimToSize();
+        int numberOfMessagesToRemove = mailQueue.size() - maxMailQueueSize;
+        if (numberOfMessagesToRemove > 0) {
+            mailQueue.subList(0, numberOfMessagesToRemove).clear();
+            mailQueue.trimToSize();
+        }
     }
 
-    @Autowired
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-    }
 }

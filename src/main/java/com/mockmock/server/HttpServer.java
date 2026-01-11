@@ -1,60 +1,63 @@
 package com.mockmock.server;
 
-import com.mockmock.AppStarter;
 import com.mockmock.Settings;
 import com.mockmock.http.*;
+import lombok.AccessLevel;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-
 @Service
-public class HttpServer implements com.mockmock.server.Server
-{
-    private int port;
+@Setter
+@Slf4j
+public class HttpServer implements com.mockmock.server.Server {
 
-    private Settings settings;
+    @Autowired
     private IndexHandler indexHandler;
+
+    @Autowired
     private MailDetailHandler mailDetailHandler;
-    private MailDetailHtmlHandler mailDetailHtmlHandler;
+
+    @Autowired
+    private ViewMailBodyHandler mailDetailHtmlHandler;
+
+    @Autowired
     private MailDeleteHandler mailDeleteHandler;
+
+    @Autowired
     private DeleteHandler deleteHandler;
 
-    public void setPort(int port)
-    {
-        this.port = port;
-    }
+    @Autowired
+    private AttachmentHandler attachmentHandler;
 
-    public void start()
-    {
-        Server http = new Server(port);
+    @Autowired
+    private ViewRawMessageHandler viewRawMessageHandler;
 
-        // get the path to the "static" folder. If it doesn't exists, check if it's in the folder of the file being executed.
-        String path = "./static";
-        if(settings.getStaticFolderPath() != null)
-        {
-            path = settings.getStaticFolderPath();
-        }
+    @Autowired
+    private ViewHeadersHandler viewHeadersHandler;
 
-        if( ! new File(path).exists())
-        {
-            System.out.println("Path to static folder does not exist: " + path);
+    @Autowired
+    private Settings settings;
 
-            // get the directory we're in
-            path = AppStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            path = new File(path).getParent() + "/static";
+    @Setter(AccessLevel.NONE)
+    private Server httpServerImpl;
 
-            System.out.println("Using auto guessed folder: " + path);
-        }
+    @Override
+    public void start() {
+        httpServerImpl = new Server(settings.getHttpPort());
 
-        System.out.println("Path to resources folder: " + path);
-
+        // set up the folder of web-facing static files (e.g. images, styles, scripts)
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase(path);
+        resourceHandler.setBaseResource(Resource.newClassPathResource("/web-static"));
+        ContextHandler contextHandler = new ContextHandler("/web-static");
+        contextHandler.setHandler(resourceHandler);
 
         Handler[] handlers = {
 			this.indexHandler,
@@ -62,51 +65,32 @@ public class HttpServer implements com.mockmock.server.Server
 			this.mailDetailHtmlHandler,
 			this.mailDeleteHandler,
 			this.deleteHandler,
-			resourceHandler
+            this.attachmentHandler,
+            this.viewRawMessageHandler,
+            this.viewHeadersHandler,
+            contextHandler
         };
         HandlerList handlerList = new HandlerList();
         handlerList.setHandlers(handlers);
-        http.setHandler(handlerList);
+        httpServerImpl.setHandler(handlerList);
 
-        try
-        {
-            System.out.println("Starting http server on port " + port);
-            http.start();
-            http.join();
-        }
-        catch (Exception e)
-        {
-            System.err.println("Could not start http server. Maybe port " + port + " is already in use?");
+        try {
+            httpServerImpl.start();
+            log.info("Starting HTTP server on http://localhost:{}", settings.getHttpPort());
+        } catch (Exception x) {
+            log.error("Could not start HTTP server. Maybe port {} is already in use? {}", settings.getHttpPort(), x.toString());
+            log.debug("Stacktrace:", x);
+            throw new RuntimeException(x);
         }
     }
 
-    @Autowired
-    public void setIndexHandler(IndexHandler indexHandler) {
-        this.indexHandler = indexHandler;
+    @Override
+    public void stop() {
+        try {
+            httpServerImpl.stop();
+        } catch (Exception x) {
+            log.error("error stopping HTTP server", x);
+        }
     }
 
-	@Autowired
-	public void setMailDetailHandler(MailDetailHandler mailDetailHandler) {
-		this.mailDetailHandler = mailDetailHandler;
-	}
-
-	@Autowired
-	public void setMailDetailHtmlHandler(MailDetailHtmlHandler mailDetailHtmlHandler) {
-		this.mailDetailHtmlHandler = mailDetailHtmlHandler;
-	}
-
-	@Autowired
-	public void setMailDeleteHandler(MailDeleteHandler mailDeleteHandler) {
-		this.mailDeleteHandler = mailDeleteHandler;
-	}
-
-    @Autowired
-    public void setDeleteHandler(DeleteHandler deleteHandler) {
-        this.deleteHandler = deleteHandler;
-    }
-
-    @Autowired
-    public void setSettings(Settings settings) {
-        this.settings = settings;
-    }
 }

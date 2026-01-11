@@ -1,0 +1,4 @@
+HELO example.com
+MAIL FROM:<alice@example.com>
+RCPT TO:<bob@example.com>
+DATA

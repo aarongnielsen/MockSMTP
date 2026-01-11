@@ -1,9 +1,14 @@
 Building
 ========
 
-To build MockMock with Maven, first download Apache Maven (http://maven.apache.org/), at least version 3.0.
-Then, run:
-`mvn package`
+MockSMTP is a Java 8 application and can be built using Maven 3.0 or later:
 
-This will compile MockMock and package it in the target folder. Then it will repackage it with the dependencies so
-there is only 1 jar file to redistribute: MockMock-<version>-jar-with-dependencies.jar
+To build the executable JAR file, run `mvn package`.
+This generates the `target/MockSMTP-<version>-jar-with-dependencies.jar` file from which the application can be run.
+(For convenience, this is also included in releases as `release/MockSMTP.jar`.)
+Everything is contained within the JAR file, so you can copy this file to a convenient path and run it directly from there.
+
+To start the application, simply run the MockSMTP JAR file in Java:
+* To start with default settings: `java -jar /path/to/MockSMTP.jar`
+* To start with default setting and included demo data: `java -jar /path/to/MockSMTP.jar --demo`
+* To show other command line options: `java -jar /path/to/MockSMTP.jar --help`

@@ -3,7 +3,7 @@ package com.mockmock.http;
 import com.mockmock.htmlbuilder.FooterHtmlBuilder;
 import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
 import com.mockmock.htmlbuilder.MailListHtmlBuilder;
-import com.mockmock.mail.MailQueue;
+import lombok.Setter;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,20 +14,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Service
-public class IndexHandler extends BaseHandler
-{
+@Setter
+public class IndexHandler extends BaseHandler {
+
+    @Autowired
     private HeaderHtmlBuilder headerHtmlBuilder;
+
+    @Autowired
     private FooterHtmlBuilder footerHtmlBuilder;
+
+    @Autowired
     private MailListHtmlBuilder mailListHtmlBuilder;
 
-    private MailQueue mailQueue;
+    @Override
+    protected String getUrlPathPattern() {
+        return "^/$";
+    }
 
     @Override
     public void handle(String target, Request request, HttpServletRequest httpServletRequest,
                        HttpServletResponse response) throws IOException, ServletException
     {
-        if(!target.equals("/"))
-        {
+        if(!isUrlPathMatch(target)) {
             return;
         }
 
@@ -45,23 +53,4 @@ public class IndexHandler extends BaseHandler
         request.setHandled(true);
     }
 
-    @Autowired
-    public void setHeaderHtmlBuilder(HeaderHtmlBuilder headerHtmlBuilder) {
-        this.headerHtmlBuilder = headerHtmlBuilder;
-    }
-
-    @Autowired
-    public void setFooterHtmlBuilder(FooterHtmlBuilder footerHtmlBuilder) {
-        this.footerHtmlBuilder = footerHtmlBuilder;
-    }
-
-    @Autowired
-    public void setMailListHtmlBuilder(MailListHtmlBuilder mailListHtmlBuilder) {
-        this.mailListHtmlBuilder = mailListHtmlBuilder;
-    }
-
-    @Autowired
-    public void setMailQueue(MailQueue mailQueue) {
-        this.mailQueue = mailQueue;
-    }
 }

@@ -1,104 +1,46 @@
 package com.mockmock;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class Settings
-{
-    /**
-     * Whether to show console output when receiving email.
-     */
-    private boolean showEmailInConsole = false;
+@Getter
+@Setter
+@Command(name = "MockSMTP", description = "MockSMTP is a mock server for testing outgoing emails.")
+public class Settings {
 
-    /**
-     * The default port where MockMock will run on
-     */
+    /** The default port on which MockSMTP will listen for SMTP connections (default is 25). **/
+    @Option(names = { "-p", "--smtp-port" }, description = "SMTP server port", defaultValue = "25")
     private int smtpPort = 25;
 
-    /**
-     * The default port for the http server
-     */
+    /** The default port on which MockSMTP will listen for HTTP API/UI connections (default is 8282). **/
+    @Option(names = { "-h", "--http-port" }, description = "HTTP server port", defaultValue = "8282")
     private int httpPort = 8282;
 
-    /**
-     * The maximum size the mail queue may be
-     */
+    /** The maximum allowable size of the mail queue. **/
+    @Option(names = { "-m", "--max-queue-size" }, description = "maximum number of emails to store", defaultValue = "1000")
     private int maxMailQueueSize = 1000;
 
-	/**
-	 * A set of "From" email addresses to filter
-	 */
+    /** A set of sender email addresses whose messages will be discarded when they are received. **/
+    @Option(names = { "-ff", "--filter-from" }, split = ",", description = "exclude any emails sent from these addresses (comma-separated)")
     private Set<String> filterFromEmailAddresses = new HashSet<>();
 
-	/**
-	 * A set of "To" email addresses to filter
-	 */
+    /** A set of recipient email addresses whose messages will be discarded when they are received. **/
+    @Option(names = { "-ft", "--filter-to" }, split = ",", description = "exclude any emails sent to these addresses (comma-separated)")
     private Set<String> filterToEmailAddresses = new HashSet<>();
 
-    /**
-     * Path to the static folder containing the images, css and js
-     */
-    private String staticFolderPath;
+    /** A flag to indicate whether to preload demo data into the server. **/
+    @Option(names = { "--demo" }, description = "load demo data at startup", defaultValue = "false")
+    private boolean loadDemoData = false;
 
+    /** A flag to indicate whether to show command-line usage and exit. **/
+    @Option(names = { "-?", "--help" }, description = "show command-line usage and exit", defaultValue = "false")
+    private boolean showUsageAndExit = false;
 
-    public boolean getShowEmailInConsole()
-    {
-        return showEmailInConsole;
-    }
-
-    public void setShowEmailInConsole(boolean showEmailInConsole)
-    {
-        this.showEmailInConsole = showEmailInConsole;
-    }
-
-    public int getSmtpPort() {
-        return smtpPort;
-    }
-
-    public void setSmtpPort(int smtpPort) {
-        this.smtpPort = smtpPort;
-    }
-
-    public int getHttpPort() {
-        return httpPort;
-    }
-
-    public void setHttpPort(int httpPort) {
-        this.httpPort = httpPort;
-    }
-
-    public int getMaxMailQueueSize() {
-        return maxMailQueueSize;
-    }
-
-    public void setMaxMailQueueSize(int maxMailQueueSize) {
-        this.maxMailQueueSize = maxMailQueueSize;
-    }
-
-	public Set<String> getFilterFromEmailAddresses() {
-		return filterFromEmailAddresses;
-	}
-
-	public void setFilterFromEmailAddresses(Set<String> filterFromEmailAddresses) {
-		this.filterFromEmailAddresses = filterFromEmailAddresses;
-	}
-
-	public Set<String> getFilterToEmailAddresses() {
-		return filterToEmailAddresses;
-	}
-
-	public void setFilterToEmailAddresses(Set<String> filterToEmailAddresses) {
-		this.filterToEmailAddresses = filterToEmailAddresses;
-	}
-
-    public String getStaticFolderPath() {
-        return staticFolderPath;
-    }
-
-    public void setStaticFolderPath(String staticFolderPath) {
-        this.staticFolderPath = staticFolderPath;
-    }
 }

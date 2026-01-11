@@ -4,16 +4,16 @@
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: MockMock - Mock SMTP Server
+# Short-Description: MockSMTP - mock SMTP Server
 ### END INIT INFO
 
 # Author: Koen Kuipers
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="MockMock - Mock SMTP Server"
-NAME=mockmock
-DAEMON=/opt/mockmock/MockMock.jar
+DESC="MockSMTP - mock SMTP Server"
+NAME=mocksmtp
+DAEMON=/opt/mocksmtp/MockSMTP.jar
 DAEMON_ARGS="-p 25000 -h 8282"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME

@@ -1,42 +1,47 @@
 package com.mockmock.server;
 
-import com.mockmock.AppStarter;
+import com.mockmock.Settings;
 import com.mockmock.mail.MockMockMessageHandlerFactory;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.subethamail.smtp.server.SMTPServer;
 
 @Service
-public class SmtpServer implements Server
-{
-    private int port;
-    private MockMockMessageHandlerFactory handlerFactory;
-
-    public void setPort(int port)
-    {
-        this.port = port;
-    }
+@Slf4j
+public class SmtpServer implements Server {
 
     @Autowired
-    public void setHandlerFactory(MockMockMessageHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
-    }
+    @Setter
+    private Settings settings;
 
-    public void start()
-    {
+    @Autowired
+    @Setter
+    private MockMockMessageHandlerFactory handlerFactory;
+
+    private SMTPServer smtpServerImpl;
+
+    @Override
+    public void start() {
         // start the smtp server!
-        SMTPServer server = new SMTPServer(handlerFactory);
-        server.setSoftwareName("MockMock SMTP Server version " + AppStarter.VERSION_NUMBER);
-        server.setPort(port);
+        smtpServerImpl = new SMTPServer(handlerFactory);
+        smtpServerImpl.setSoftwareName("MockSMTP");
+        smtpServerImpl.setPort(settings.getSmtpPort());
 
-        try
-        {
-            System.out.println("Starting MockMock on port " + port);
-            server.start();
-        }
-        catch (Exception e)
-        {
-            System.err.println("Could not start MockMock. Maybe port " + port + " is already in use?");
+        try {
+            smtpServerImpl.start();
+            log.info("MockSMTP is listening for SMTP on port {}", settings.getSmtpPort());
+        } catch (Exception x) {
+            log.error("Could not start SMTP server. Maybe port {} is already in use? {}", settings.getSmtpPort(), x.getMessage());
+            log.debug("Stacktrace:", x);
+            throw new RuntimeException(x);
         }
     }
+
+    @Override
+    public void stop() {
+        smtpServerImpl.stop();
+    }
+
 }
