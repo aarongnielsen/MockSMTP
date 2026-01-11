@@ -64,12 +64,12 @@ public class MailDetailHtmlHandlerTest {
     private static Stream<Arguments> handle_testByPathAndIndex_arguments() {
         return Stream.of(
                 Arguments.of("/invalid/path", 1, false),
-                Arguments.of("/view/body/0", 1, false),   // indexes start at 1
-                Arguments.of("/view/body/4", 4, true),    // 4th from the start
-                Arguments.of("/view/body/-4", 2, true),   // 4th from the end
-                Arguments.of("/view/body/5", 5, false),   // no body as either text or HTML
-                Arguments.of("/view/body/6", 6, false),   // 6th from the start (out of bounds)
-                Arguments.of("/view/body/-6", 1, false)   // 6th from the end (out of bounds)
+                Arguments.of("/view/0/body", 1, false),   // indexes start at 1
+                Arguments.of("/view/4/body", 4, true),    // 4th from the start
+                Arguments.of("/view/-4/body", 2, true),   // 4th from the end
+                Arguments.of("/view/5/body", 5, false),   // no body as either text or HTML
+                Arguments.of("/view/6/body", 6, false),   // 6th from the start (out of bounds)
+                Arguments.of("/view/-6/body", 1, false)   // 6th from the end (out of bounds)
         );
     }
 

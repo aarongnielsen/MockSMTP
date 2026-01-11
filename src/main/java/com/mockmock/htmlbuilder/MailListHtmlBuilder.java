@@ -22,7 +22,7 @@ public class MailListHtmlBuilder implements HtmlBuilder {
             output += "  <h1>No emails in queue</h1>\n";
         } else {
             String mailText = mailQueue.size() == 1 ? "email" : "emails";
-            output += "  <h1>You have "  + mailQueue.size() + " " + mailText + "! <a class=\"heading-action\" href=\"/mail/delete/all\">Delete all</a></h1>\n";
+            output += "  <h1>You have "  + mailQueue.size() + " " + mailText + "! <a class=\"heading-action\" href=\"/delete/all\">Delete all</a></h1>\n";
             output += "  <table class=\"messages-list table table-striped\">\n";
             output += "    <thead>\n";
             output += "      <th>From</th>\n";
@@ -65,11 +65,11 @@ public class MailListHtmlBuilder implements HtmlBuilder {
         );
 
         StringBuilder sectionsStringBuilder = new StringBuilder();
-        sectionsStringBuilder.append("    <a href=\"/view/headers/").append(index).append("\">")
+        sectionsStringBuilder.append("    <a href=\"/view/").append(index).append("/headers\">")
                 .append("Headers")
                 .append("</a>")
                 .append("<br>\n");
-        sectionsStringBuilder.append("    <a href=\"/view/body/").append(index).append("\">")
+        sectionsStringBuilder.append("    <a href=\"/view/").append(index).append("/body\">")
                 .append(mail.getBodyHtml() != null ? "Body (HTML)" : "Body (text)")
                 .append("</a>")
                 .append("<br>\n");
@@ -94,7 +94,7 @@ public class MailListHtmlBuilder implements HtmlBuilder {
                  sectionsStringBuilder +
             "  </td>\n" +
             "  <td class=\"table-column-actions action-link\">\n" +
-            "    <a href=\"/view/raw/" + index + "\">View raw text</a><br>\n" +
+            "    <a href=\"/view/" + index + "/raw\">View raw text</a><br>\n" +
             "    <a href=\"/delete/" + index + "\">Delete</a>" +
             "  </td>\n" +
             "</tr>";

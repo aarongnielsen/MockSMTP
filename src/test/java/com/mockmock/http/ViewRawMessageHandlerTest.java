@@ -54,10 +54,10 @@ public class ViewRawMessageHandlerTest {
     private static Stream<Arguments> handle_testByPathAndIndex_arguments() {
         return Stream.of(
                 Arguments.of("/invalid/path", 1, false),
-                Arguments.of("/view/raw/0", 1, false),
-                Arguments.of("/view/raw/123", 1, false),
-                Arguments.of("/view/raw/4", 4, true),
-                Arguments.of("/view/raw/-4", 2, true)
+                Arguments.of("/view/0/raw", 1, false),
+                Arguments.of("/view/123/raw", 1, false),
+                Arguments.of("/view/4/raw", 4, true),
+                Arguments.of("/view/-4/raw", 2, true)
         );
     }
 

@@ -59,12 +59,12 @@ public class ViewHeadersHandlerTest {
     private static Stream<Arguments> handle_testByPathAndIndex_arguments() {
         return Stream.of(
                 Arguments.of("/invalid/path", 1, false),
-                Arguments.of("/view/headers/0", 1, false),   // indexes start at 1
-                Arguments.of("/view/headers/1", 2, false),   // MockMail with no MIME message
-                Arguments.of("/view/headers/4", 4, true),     // 4th from the start
-                Arguments.of("/view/headers/-4", 2, true),    // 4th from the end
-                Arguments.of("/view/headers/6", 1, false),   // 6th from the start (out of bounds)
-                Arguments.of("/view/headers/-6", 1, false)   // 6th from the end (out of bounds)
+                Arguments.of("/view/0/headers", 1, false),   // indexes start at 1
+                Arguments.of("/view/1/headers", 2, false),   // MockMail with no MIME message
+                Arguments.of("/view/4/headers", 4, true),     // 4th from the start
+                Arguments.of("/view/-4/headers", 2, true),    // 4th from the end
+                Arguments.of("/view/6/headers", 1, false),   // 6th from the start (out of bounds)
+                Arguments.of("/view/-6/headers", 1, false)   // 6th from the end (out of bounds)
         );
     }
 

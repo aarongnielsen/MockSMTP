@@ -50,7 +50,7 @@ public class DeleteHandlerTest {
     private static Stream<Arguments> handleTestArguments() {
         return Stream.of(
                 Arguments.of("/incorrect/path", false),
-                Arguments.of("/mail/delete/all", true)
+                Arguments.of("/delete/all", true)
         );
     }
 

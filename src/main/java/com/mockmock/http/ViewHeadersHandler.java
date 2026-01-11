@@ -19,7 +19,7 @@ public class ViewHeadersHandler extends BaseHandler {
 
     @Override
     protected String getUrlPathPattern() {
-        return "^/view/headers/(-?[0-9]+)/?$";
+        return "^/view/(-?[0-9]+)/headers/?$";
     }
 
     @Override

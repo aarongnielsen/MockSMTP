@@ -24,7 +24,7 @@ public class HttpServerTest {
         httpServer.start();
 
         try {
-            String url = "http://localhost:" + port + "/mail/delete/all";
+            String url = "http://localhost:" + port + "/delete/all";
             HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
             urlConnection.setInstanceFollowRedirects(false);
             urlConnection.getInputStream().close();
@@ -56,7 +56,7 @@ public class HttpServerTest {
         HttpServer httpServer = new HttpServer();
         httpServer.setSettings(settings);
 
-        // these tests only actually request /mail/delete/all, so we only need the one handler
+        // these tests only actually request /delete/all, so we only need the one handler
         DeleteHandler deleteHandler = new DeleteHandler();
         deleteHandler.setMailQueue(new MailQueue());
 

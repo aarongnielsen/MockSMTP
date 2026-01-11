@@ -10,9 +10,9 @@
     <packaging>jar</packaging>
 
     <name>MockSMTP</name>
-    <description>Mock SMTP Server</description>
-    <inceptionYear>2012</inceptionYear>
-    <url>https://github.com/tweakers-dev/MockMock</url>
+    <description>A mock SMTP server for testing</description>
+    <inceptionYear>2025</inceptionYear>
+    <url>https://github.com/aarongnielsen/MockSMTP</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -38,16 +38,16 @@ public class MailViewHtmlBuilder implements HtmlBuilder {
 
         output +=
                 "    <div class=\"span10\" name=\"addresses\">\n" +
-                "      <h3>Headers <a class=\"heading-action\" href=\"/view/headers/" + mailIndex + "\">Show All</a></h3>\n" +
+                "      <h3>Headers <a class=\"heading-action\" href=\"/view/" + mailIndex + "/headers\">Show All</a></h3>\n" +
                 "      <pre class=\"well\" style=\"width: 100%;\">\n" + mailHeaderSummaryHtmlBuilder.build() + "</pre>\n" +
                 "    </div>\n";
 
         // display body in an iframe
         String bodyHeading = (mockMail.getBodyHtml() != null ? "Body (HTML)" : "Body (plain text)");
-        bodyHeading += " <a class=\"heading-action\" href=\"/view/body/" + mailIndex + "\">Open</a>";
+        bodyHeading += " <a class=\"heading-action\" href=\"/view/" + mailIndex + "/body\">Open</a>";
         output += "    <div class=\"span10\" name=\"bodyHtmlFormatted\">\n" +
                   "      <h3>" + bodyHeading + "</h3>\n" +
-                  "      <iframe class=\"well\" src=\"/view/body/" + mailIndex + "\" style=\"width: 100%; height: 500px; overflow: scroll;\" name=\"bodyHTML_iFrame\"></iframe>\n" +
+                  "      <iframe class=\"well\" src=\"/view/" + mailIndex + "/body\" style=\"width: 100%; height: 500px; overflow: scroll;\" name=\"bodyHTML_iFrame\"></iframe>\n" +
                   "    </div>";
 
         if (!mockMail.getAttachments().isEmpty()) {

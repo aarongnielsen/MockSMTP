@@ -14,7 +14,7 @@ public class ViewMailBodyHandler extends BaseHandler {
 
     @Override
     protected String getUrlPathPattern() {
-        return "^/view/body/(-?[0-9]+)/?$";
+        return "^/view/(-?[0-9]+)/body/?$";
     }
 
     @Override

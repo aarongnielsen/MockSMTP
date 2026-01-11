@@ -14,7 +14,7 @@ public class ViewRawMessageHandler extends BaseHandler {
 
     @Override
     protected String getUrlPathPattern() {
-        return "^/view/raw/(-?[0-9]+)/?$";
+        return "^/view/(-?[0-9]+)/raw/?$";
     }
 
     @Override

@@ -15,7 +15,7 @@ public class DeleteHandler extends BaseHandler  {
 
     @Override
     protected String getUrlPathPattern() {
-        return "^/mail/delete/all$";
+        return "^/delete/all$";
     }
 
     @Override

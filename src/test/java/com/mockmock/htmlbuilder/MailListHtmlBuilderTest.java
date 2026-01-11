@@ -71,7 +71,7 @@ public class MailListHtmlBuilderTest {
         mailQueue.add(mail);
 
         String output = builder.build();
-        Assertions.assertTrue(output.contains("<a href=\"/view/body/1\">Body (HTML)</a>"));
+        Assertions.assertTrue(output.contains("<a href=\"/view/1/body\">Body (HTML)</a>"));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class MailListHtmlBuilderTest {
         mailQueue.add(mail);
 
         String output = builder.build();
-        Assertions.assertTrue(output.contains("<a href=\"/view/body/1\">Body (text)</a>"));
+        Assertions.assertTrue(output.contains("<a href=\"/view/1/body\">Body (text)</a>"));
     }
 
     @Test
