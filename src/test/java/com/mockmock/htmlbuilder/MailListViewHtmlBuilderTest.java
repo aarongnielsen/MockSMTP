@@ -1,68 +1,61 @@
 package com.mockmock.htmlbuilder;
 
+import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.ArrayList;
-
-public class MailListHtmlBuilderTest {
+public class MailListViewHtmlBuilderTest {
 
     @ParameterizedTest
-    @NullAndEmptySource
-    public void build_emptyMailQueue(ArrayList<MockMail> mailQueue) {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        builder.setMailQueue(mailQueue);
-        String output = builder.build();
+    @ValueSource(booleans = { true, false })
+    public void build_emptyMailQueue(boolean isMailQueueConstructed) {
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        String output = builder.buildMailListView(isMailQueueConstructed ? new MailQueue() : null);
         Assertions.assertTrue(output.contains("<h1>No emails in queue</h1>"));
         Assertions.assertFalse(output.contains("<table"));
     }
 
     @Test
     public void build_mailQueueHasOneEntry() {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        ArrayList<MockMail> mailQueue = new ArrayList<>();
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        MailQueue mailQueue = new MailQueue();
         mailQueue.add(new MockMail());
-        builder.setMailQueue(mailQueue);
-        String output = builder.build();
+        String output = builder.buildMailListView(mailQueue);
         Assertions.assertTrue(output.contains("<h1>You have 1 email! "));
         Assertions.assertTrue(output.contains("<table"));
-
     }
 
     @Test
     public void build_mailQueueHasMoreThanOneEntry() {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        ArrayList<MockMail> mailQueue = new ArrayList<>();
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        MailQueue mailQueue = new MailQueue();
         mailQueue.add(new MockMail());
         mailQueue.add(new MockMail());
-        builder.setMailQueue(mailQueue);
-        String output = builder.build();
+        String output = builder.buildMailListView(mailQueue);
         Assertions.assertTrue(output.contains("<h1>You have 2 emails! "));
         Assertions.assertTrue(output.contains("<table"));
     }
 
     @Test
     public void build_mailMessageHasNoSubject() {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        ArrayList<MockMail> mailQueue = new ArrayList<>();
-        builder.setMailQueue(mailQueue);
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        MailQueue mailQueue = new MailQueue();
 
-        MockMail mail = new MockMail();
-        mail.setSubject(null);
-        mailQueue.add(mail);
+        MockMail mockMail = new MockMail();
+        mockMail.setSubject(null);
+        mailQueue.add(mockMail);
 
-        String output = builder.build();
+        String output = builder.buildMailListView(mailQueue);
         Assertions.assertTrue(output.contains("<em>No subject given</em>"));
     }
 
     @Test
     public void build_mailMessageHasHtmlBody() {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        ArrayList<MockMail> mailQueue = new ArrayList<>();
-        builder.setMailQueue(mailQueue);
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        MailQueue mailQueue = new MailQueue();
 
         MockMail mail = new MockMail();
         mail.setSubject("message1");
@@ -70,15 +63,14 @@ public class MailListHtmlBuilderTest {
         mail.setBody(null);
         mailQueue.add(mail);
 
-        String output = builder.build();
+        String output = builder.buildMailListView(mailQueue);
         Assertions.assertTrue(output.contains("<a href=\"/view/1/body\">Body (HTML)</a>"));
     }
 
     @Test
     public void build_mailMessageHasPlainTextBody() {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        ArrayList<MockMail> mailQueue = new ArrayList<>();
-        builder.setMailQueue(mailQueue);
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        MailQueue mailQueue = new MailQueue();
 
         MockMail mail = new MockMail();
         mail.setSubject("message1");
@@ -86,15 +78,14 @@ public class MailListHtmlBuilderTest {
         mail.setBody("body1");
         mailQueue.add(mail);
 
-        String output = builder.build();
+        String output = builder.buildMailListView(mailQueue);
         Assertions.assertTrue(output.contains("<a href=\"/view/1/body\">Body (text)</a>"));
     }
 
     @Test
     public void build_mailMessageHasAttachments() {
-        MailListHtmlBuilder builder = new MailListHtmlBuilder();
-        ArrayList<MockMail> mailQueue = new ArrayList<>();
-        builder.setMailQueue(mailQueue);
+        MailListViewHtmlBuilder builder = new MailListViewHtmlBuilder();
+        MailQueue mailQueue = new MailQueue();
 
         MockMail mail = new MockMail();
         mail.setSubject("message1");
@@ -108,7 +99,7 @@ public class MailListHtmlBuilderTest {
         mail.getAttachments().add(attachment2);
         mailQueue.add(mail);
 
-        String output = builder.build();
+        String output = builder.buildMailListView(mailQueue);
         Assertions.assertTrue(output.contains("<a href=\"/view/1/attachment/1\">Attachment 1</a>"));
         Assertions.assertTrue(output.contains("<a href=\"/view/1/attachment/2\">Attachment 2: attachment2.bin</a>"));
     }

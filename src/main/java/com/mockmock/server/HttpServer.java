@@ -2,6 +2,7 @@ package com.mockmock.server;
 
 import com.mockmock.Settings;
 import com.mockmock.http.*;
+import com.mockmock.mail.MailQueue;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,7 @@ import org.springframework.stereotype.Service;
 public class HttpServer implements com.mockmock.server.Server {
 
     @Autowired
-    private IndexHandler indexHandler;
-
-    @Autowired
-    private MailDetailHandler mailDetailHandler;
+    private MailQueue mailQueue;
 
     @Autowired
     private ViewMailBodyHandler mailDetailHtmlHandler;
@@ -60,8 +58,8 @@ public class HttpServer implements com.mockmock.server.Server {
         contextHandler.setHandler(resourceHandler);
 
         Handler[] handlers = {
-			this.indexHandler,
-			this.mailDetailHandler,
+            new IndexHandler(mailQueue),
+            new MailDetailHandler(mailQueue),
 			this.mailDetailHtmlHandler,
 			this.mailDeleteHandler,
 			this.deleteHandler,

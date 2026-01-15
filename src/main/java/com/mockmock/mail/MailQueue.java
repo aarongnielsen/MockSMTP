@@ -22,6 +22,11 @@ public class MailQueue  {
     @Setter
     private Settings settings;
 
+    /** Returns the number of messages in the queue. **/
+    public int size() {
+        return mailQueue.size();
+    }
+
     /**
      * Adds a mail message to the queue.
      * This is implemented as an insertion-sort, so messages are always stored in order of the time they are received.
@@ -120,7 +125,7 @@ public class MailQueue  {
 
     /** Trims the mail queue so that the number of messages does not exceed the maximum setting. **/
     private void trimQueue() {
-        int maxMailQueueSize = settings.getMaxMailQueueSize();
+        int maxMailQueueSize = (settings != null ? settings.getMaxMailQueueSize() : 0);
         if (maxMailQueueSize <= 0) {
             return;
         }

@@ -60,8 +60,6 @@ public class HttpServerTest {
         DeleteHandler deleteHandler = new DeleteHandler();
         deleteHandler.setMailQueue(new MailQueue());
 
-        httpServer.setIndexHandler(new IndexHandler());
-        httpServer.setMailDetailHandler(new MailDetailHandler());
         httpServer.setMailDetailHtmlHandler(new ViewMailBodyHandler());
         httpServer.setMailDeleteHandler(new MailDeleteHandler());
         httpServer.setDeleteHandler(deleteHandler);
