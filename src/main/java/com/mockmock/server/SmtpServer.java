@@ -4,19 +4,14 @@ import com.mockmock.Settings;
 import com.mockmock.mail.MockMockMessageHandlerFactory;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.subethamail.smtp.server.SMTPServer;
 
-@Service
 @Slf4j
 public class SmtpServer implements Server {
 
-    @Autowired
     @Setter
     private Settings settings;
 
-    @Autowired
     @Setter
     private MockMockMessageHandlerFactory handlerFactory;
 

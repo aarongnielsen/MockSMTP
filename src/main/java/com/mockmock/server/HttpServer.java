@@ -12,18 +12,14 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-@Setter
 @Slf4j
 public class HttpServer implements com.mockmock.server.Server {
 
-    @Autowired
+    @Setter
     private MailQueue mailQueue;
 
-    @Autowired
+    @Setter
     private Settings settings;
 
     @Setter(AccessLevel.NONE)
@@ -45,6 +41,7 @@ public class HttpServer implements com.mockmock.server.Server {
             new MailDeleteHandler(mailQueue),
             new DeleteHandler(mailQueue),
             new AttachmentHandler(mailQueue),
+            new ViewMailBodyHandler(mailQueue),
             new ViewHeadersHandler(mailQueue),
             new ViewRawMessageHandler(mailQueue),
             contextHandler

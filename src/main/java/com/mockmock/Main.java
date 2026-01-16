@@ -1,12 +1,13 @@
 package com.mockmock;
 
+import com.mockmock.mail.MailQueue;
+import com.mockmock.mail.MockMockMessageHandlerFactory;
 import com.mockmock.server.DemoDataLoader;
 import com.mockmock.server.HttpServer;
 import com.mockmock.server.SmtpServer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
@@ -25,10 +26,13 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
     //  - if all is well, start servers
 
     @NonNull
-    private BeanFactory beanFactory;
-
-    @NonNull
     private Settings appSettings;
+
+    @Getter
+    private SmtpServer smtpServer;
+
+    @Getter
+    private HttpServer httpServer;
 
     @Getter
     private int exitCode;
@@ -50,10 +54,16 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
             exitCode = 1;
         }
 
+        // create a queue that will be common to all servers
+        MailQueue mailQueue = new MailQueue();
+
         // start the servers here
         if (exitCode == 0) {
             try {
-                beanFactory.getBean(SmtpServer.class).start();
+                smtpServer = new SmtpServer();
+                smtpServer.setSettings(appSettings);
+                smtpServer.setHandlerFactory(new MockMockMessageHandlerFactory(mailQueue, appSettings));
+                smtpServer.start();
                 if (appSettings.isLoadDemoData()) {
                     new DemoDataLoader(appSettings).load();
                 }
@@ -63,10 +73,22 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
             }
 
             try {
-                beanFactory.getBean(HttpServer.class).start();
+                httpServer = new HttpServer();
+                httpServer.setSettings(appSettings);
+                httpServer.setMailQueue(mailQueue);
+                httpServer.start();
             } catch (Exception x) {
                 exitCode = 3;
             }
+        }
+    }
+
+    void stopServers() {
+        if (httpServer != null) {
+            httpServer.stop();
+        }
+        if (smtpServer != null) {
+            smtpServer.stop();
         }
     }
 
