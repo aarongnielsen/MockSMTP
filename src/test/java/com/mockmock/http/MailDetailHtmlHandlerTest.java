@@ -41,7 +41,7 @@ public class MailDetailHtmlHandlerTest {
         Response jettyResponse = Mockito.mock(Response.class);
         StringWriter responseStringWriter = new StringWriter();
         Mockito.doReturn(new PrintWriter(responseStringWriter)).when(jettyResponse).getWriter();
-        ViewMailBodyHandler mailDetailHtmlHandler = new ViewMailBodyHandler();
+        ViewMailBodyHandler mailDetailHtmlHandler = new ViewMailBodyHandler(mailQueue);
         mailDetailHtmlHandler.setMailQueue(mailQueue);
         mailDetailHtmlHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 

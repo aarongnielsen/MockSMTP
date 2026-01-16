@@ -54,18 +54,8 @@ public class HttpServerTest {
 
     private HttpServer createHttpServer(Settings settings) {
         HttpServer httpServer = new HttpServer();
+        httpServer.setMailQueue(new MailQueue());
         httpServer.setSettings(settings);
-
-        // these tests only actually request /delete/all, so we only need the one handler
-        DeleteHandler deleteHandler = new DeleteHandler();
-        deleteHandler.setMailQueue(new MailQueue());
-
-        httpServer.setMailDetailHtmlHandler(new ViewMailBodyHandler());
-        httpServer.setMailDeleteHandler(new MailDeleteHandler());
-        httpServer.setDeleteHandler(deleteHandler);
-        httpServer.setAttachmentHandler(new AttachmentHandler());
-        httpServer.setViewRawMessageHandler(new ViewRawMessageHandler());
-        httpServer.setViewHeadersHandler(new ViewHeadersHandler());
         return httpServer;
     }
 

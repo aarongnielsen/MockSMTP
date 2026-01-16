@@ -24,24 +24,6 @@ public class HttpServer implements com.mockmock.server.Server {
     private MailQueue mailQueue;
 
     @Autowired
-    private ViewMailBodyHandler mailDetailHtmlHandler;
-
-    @Autowired
-    private MailDeleteHandler mailDeleteHandler;
-
-    @Autowired
-    private DeleteHandler deleteHandler;
-
-    @Autowired
-    private AttachmentHandler attachmentHandler;
-
-    @Autowired
-    private ViewRawMessageHandler viewRawMessageHandler;
-
-    @Autowired
-    private ViewHeadersHandler viewHeadersHandler;
-
-    @Autowired
     private Settings settings;
 
     @Setter(AccessLevel.NONE)
@@ -60,12 +42,11 @@ public class HttpServer implements com.mockmock.server.Server {
         Handler[] handlers = {
             new IndexHandler(mailQueue),
             new MailDetailHandler(mailQueue),
-			this.mailDetailHtmlHandler,
-			this.mailDeleteHandler,
-			this.deleteHandler,
-            this.attachmentHandler,
-            this.viewRawMessageHandler,
-            this.viewHeadersHandler,
+            new MailDeleteHandler(mailQueue),
+            new DeleteHandler(mailQueue),
+            new AttachmentHandler(mailQueue),
+            new ViewHeadersHandler(mailQueue),
+            new ViewRawMessageHandler(mailQueue),
             contextHandler
         };
         HandlerList handlerList = new HandlerList();

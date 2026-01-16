@@ -3,7 +3,6 @@ package com.mockmock.http;
 import com.mockmock.mail.MailQueue;
 import lombok.Setter;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
@@ -11,7 +10,6 @@ import java.util.regex.Pattern;
 
 public abstract class BaseHandler extends AbstractHandler {
 
-    @Autowired
     @Setter
     protected MailQueue mailQueue;
 

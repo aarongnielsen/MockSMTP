@@ -37,9 +37,7 @@ public class AttachmentHandlerTest {
         ServletOutputStream servletOutputStream = Mockito.mock(ServletOutputStream.class);
         Mockito.doReturn(servletOutputStream).when(jettyResponse).getOutputStream();
 
-        AttachmentHandler attachmentHandler = new AttachmentHandler();
-        attachmentHandler.setMailQueue(mailQueue);
-
+        AttachmentHandler attachmentHandler = new AttachmentHandler(mailQueue);
         attachmentHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 
         // see if it was handled correctly
