@@ -1,15 +1,19 @@
 package com.mockmock.mail;
 
 import com.mockmock.Settings;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MailQueueTest
 {
 	@Test
-	public void testEmptyQueue() {
+	public void emptyQueue_valid() {
 		MockMail mail = new MockMail();
 		MailQueue mailQueue = new MailQueue();
 		mailQueue.setSettings(new Settings());
@@ -21,7 +25,7 @@ public class MailQueueTest
 	}
 
     @Test
-    public void testAdd() {
+    public void add_valid() {
         MailQueue mailQueue = new MailQueue();
         mailQueue.setSettings(new Settings());
         mailQueue.emptyQueue();
@@ -33,7 +37,7 @@ public class MailQueueTest
     }
 
     @Test
-    public void testMultipleAdd() {
+    public void add_validForMultipleMessages() {
         Settings settings = new Settings();
         MailQueue mailQueue = new MailQueue();
         mailQueue.setSettings(settings);
@@ -55,7 +59,7 @@ public class MailQueueTest
     }
 
     @Test
-    public void testGetById() {
+    public void getById_valid() {
         MailQueue mailQueue = new MailQueue();
         mailQueue.setSettings(new Settings());
         mailQueue.emptyQueue();
@@ -75,4 +79,41 @@ public class MailQueueTest
         Assertions.assertEquals(mail, mailQueue.getById(id));
         Assertions.assertEquals(mail2, mailQueue.getById(id2));
     }
+
+    @Test
+    public void findById_valid() {
+        List<MockMail> mockMailMessages = IntStream.rangeClosed(0, 3)
+                .mapToObj(i -> {
+                    String iAsString = String.valueOf(i);
+                    String uuidString = StringUtils.repeat(iAsString, 8) + "-"
+                            + StringUtils.repeat(iAsString, 4) + "-"
+                            + StringUtils.repeat(iAsString, 4) + "-"
+                            + StringUtils.repeat(iAsString, 4) + "-"
+                            + StringUtils.repeat(iAsString, 12);
+                    MockMail mockMail = new MockMail();
+                    mockMail.setId(UUID.fromString(uuidString));
+                    mockMail.setReceivedTime(2000000000L + i);
+                    return mockMail;
+                })
+                .collect(Collectors.toList());
+
+        MailQueue mailQueue = new MailQueue();
+        for (int i = 1; i < mockMailMessages.size(); i++) {
+            mailQueue.add(mockMailMessages.get(i));
+        }
+
+        Assertions.assertEquals(1, mailQueue.findById(mockMailMessages.get(1).getId()));
+        Assertions.assertEquals(2, mailQueue.findById(mockMailMessages.get(2).getId()));
+        Assertions.assertEquals(3, mailQueue.findById(mockMailMessages.get(3).getId()));
+        Assertions.assertEquals(0, mailQueue.findById(mockMailMessages.get(0).getId()));  // not found
+    }
+
+    @Test
+    public void deleteByIndex_notFound() {
+        MailQueue mailQueue = new MailQueue();
+        IntStream.rangeClosed(1, 3).forEach((i) -> mailQueue.add(new MockMail()));
+        Assertions.assertFalse(mailQueue.deleteByIndex(4));
+        Assertions.assertFalse(mailQueue.deleteByIndex(0));
+    }
+
 }
