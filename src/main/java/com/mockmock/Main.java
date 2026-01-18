@@ -19,7 +19,7 @@ public class Main {
     // constants
 
     /** The current version number of the application. **/
-    public static final String VERSION_NUMBER = "1.6.0-dev";
+    public static final String VERSION_NUMBER = "1.6.0";
 
     // constants - exit codes
 
