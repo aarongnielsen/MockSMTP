@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+/**
+ * Builds the web UI page displaying the details of a single received mail message.
+ */
 @Slf4j
 public class MailMessageViewHtmlBuilder extends WebUiHtmlBuilder {
 
+    /** Builds a web page, including the header and footer, to display the details of a single message. **/
     public String buildMailMessageView(MockMail mockMail, int mailIndex) {
         // build the output here
         StringBuilder stringBuilder = new StringBuilder();
@@ -89,6 +93,13 @@ public class MailMessageViewHtmlBuilder extends WebUiHtmlBuilder {
             "subject", "date", "from", "to", "cc", "bcc", "reply-to"
     };
 
+    /**
+     * Builds a summary list of the email's headers for display on this page.
+     * The headers are displayed simply as a list of strings, separated by line feed characters.
+     * <p>
+     * While only a summary of the headers are displayed by this method,
+     * the web UI allows the user to load the entire set of headers for a given message.
+     */
     public String buildHeaderSummaryLines(MockMail mockMail) {
         MimeMessage mimeMessage = mockMail.getMimeMessage();
         List<String> headerLines = new ArrayList<>();

@@ -62,7 +62,7 @@ There are a number of other command-line parameters available, including:
 | `-ff` *addresses* <br> `--filter-from=`*addresses* | Discards messages sent from certain addresses (single comma-separated string) | (empty, accept all messages) |
 | `-ft` *addresses* <br> `--filter-to=`*addresses*   | Discards messages sent to certain addresses (single comma-separated string)   | (empty, accept all messages) |
 | `--demo`                                           | Starts the application with demo data loaded                                  | false                        |
-| `-?` <br> `--help`                                 | Shows command-line usage and exits                                            |                              |
+| `-?` <br> `--help`                                 | Shows command-line usage and exits                                            | false                        |
 
 ### Building from source
 

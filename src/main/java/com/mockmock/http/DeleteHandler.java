@@ -10,7 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The HTTP handler used to delete all messages in the queue.
+ * <p>
+ * The user invokes this handler by requesting the URL {@code /delete/all}.
+ */
 public class DeleteHandler extends BaseHandler  {
+
+    // constructors
 
     public DeleteHandler(MailQueue mailQueue) {
         setMailQueue(mailQueue);

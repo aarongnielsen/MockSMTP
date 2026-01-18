@@ -13,12 +13,21 @@ import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * The base for classes that create view pages in the Web UI.
+ * It provides some default behaviour for generating HTML headers and footers,
+ * as well as formatting email addresses and their display names.
+ */
 @Slf4j
 public abstract class WebUiHtmlBuilder {
 
+    /** The maximum length (in characters) that can be displayed for an email address and its display name. **/
     @Setter
     protected int maxAddressLength = 30;
 
+    // public methods
+
+    /** Builds the common HTML header for the page. **/
     protected String buildHeader() {
         String output =
                 "<!DOCTYPE html>\n" +
@@ -45,6 +54,7 @@ public abstract class WebUiHtmlBuilder {
         return output;
     }
 
+    /** Builds the common HTML footer for the page. **/
     protected String buildFooter() {
         String output =
                 "  <script src=\"/web-static/js/jquery-1.8.1.min.js\"></script>\n" +
@@ -54,6 +64,12 @@ public abstract class WebUiHtmlBuilder {
         return output;
     }
 
+    /**
+     * Builds a HTML string for the sender of the given email message.
+     * <p>
+     * If the sender has a display name, it will be displayed first, with the email address surrounded by angle brackets.
+     * If not, the email address is displayed on its own.
+     */
     protected String buildSenderAddress(MockMail mockMail) {
         MimeMessage mimeMessage = mockMail.getMimeMessage();
         if (mimeMessage == null) {
@@ -88,6 +104,15 @@ public abstract class WebUiHtmlBuilder {
         return null;
     }
 
+    /**
+     * Builds a HTML string for the sender of the given email message.
+     * <p>
+     * If the sender has a display name, it will be displayed first, with the email address surrounded by angle brackets.
+     * If not, the email address is displayed on its own.
+     * <p>
+     * Multiple recipients of the same type are displayed as a comma-separated list.
+     * If no recipient type is specified, all recipients are listed together.
+     */
     protected String buildRecipientAddress(MockMail mockMail, Message.RecipientType recipientType) {
         MimeMessage mimeMessage = mockMail.getMimeMessage();
         if(mimeMessage == null) {

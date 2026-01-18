@@ -8,10 +8,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The base for all classes that handle HTTP requests and generate web UI pages in response.
+ */
 public abstract class BaseHandler extends AbstractHandler {
+
+    // instance fields
 
     @Setter
     protected MailQueue mailQueue;
+
+    // methods to be implemented
 
     /** Returns the regular expression used to match the URL paths handled by this handler. **/
     protected abstract String getUrlPathPattern();
@@ -26,6 +33,8 @@ public abstract class BaseHandler extends AbstractHandler {
     protected boolean isUrlPathMatch(String urlPath) {
         return urlPath.matches(getUrlPathPattern());
     }
+
+    // protected methods
 
     /**
      * Sets the basic fields in the given HTTP response.

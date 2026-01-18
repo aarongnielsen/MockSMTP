@@ -17,8 +17,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
+        <project.java.version>1.8</project.java.version>
 
-        <deps.jacocoMavenPlugin.version>0.8.14</deps.jacocoMavenPlugin.version>
+        <plugins.maven-assembly.version>3.6.0</plugins.maven-assembly.version>
+        <plugins.maven-compiler.version>2.3.2</plugins.maven-compiler.version>
+        <plugins.maven-jar.version>2.3.2</plugins.maven-jar.version>
+        <plugins.maven-javadoc.version>3.12.0</plugins.maven-javadoc.version>
+        <plugins.jacoco.version>0.8.14</plugins.jacoco.version>
 
         <deps.apacheCommons.text.version>1.14.0</deps.apacheCommons.text.version>
         <deps.javaMail.version>1.4</deps.javaMail.version>
@@ -37,16 +42,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>${plugins.maven-compiler.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${project.java.version}</source>
+                    <target>${project.java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>${plugins.maven-jar.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -57,8 +62,25 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${plugins.maven-javadoc.version}</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <overview>overview.html</overview>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${plugins.maven-assembly.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -85,7 +107,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${deps.jacocoMavenPlugin.version}</version>
+                <version>${plugins.jacoco.version}</version>
                 <executions>
                     <execution>
                         <goals>

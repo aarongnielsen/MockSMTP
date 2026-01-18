@@ -9,9 +9,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The HTTP handler used to display the list of messages received, the default view of the application.
+ * <p>
+ * The user invokes this handler by requesting the URL {@code /}.
+ */
 public class IndexHandler extends BaseHandler {
 
+    // instance fields
+
     private final MailListViewHtmlBuilder mailListViewHtmlBuilder = new MailListViewHtmlBuilder();
+
+    // constructors
 
     public IndexHandler(MailQueue mailQueue) {
         setMailQueue(mailQueue);

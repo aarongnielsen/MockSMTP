@@ -9,7 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The HTTP handler used to display and download attachments.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:messageIndex/attachment/:attachmentIndex}.
+ */
 public class AttachmentHandler extends BaseHandler {
+
+    // constructors
 
     public AttachmentHandler(MailQueue mailQueue) {
         setMailQueue(mailQueue);
@@ -55,11 +62,6 @@ public class AttachmentHandler extends BaseHandler {
         request.setHandled(true);
     }
 
-    /**
-     * Returns the mail id if it is part of the target
-     * @param target String
-     * @return int
-     */
     private int getMailIndex(String target) {
         return getRegexMatchedGroup(target, 1);
     }

@@ -14,7 +14,14 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+/**
+ * The HTTP handler used to display the headers of a given message in the mail queue.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex/headers}.
+ */
 public class ViewHeadersHandler extends BaseHandler {
+
+    // constructors
 
     public ViewHeadersHandler(MailQueue mailQueue) {
         setMailQueue(mailQueue);

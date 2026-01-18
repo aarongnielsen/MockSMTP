@@ -3,7 +3,6 @@ package com.mockmock.http;
 import com.mockmock.htmlbuilder.MailMessageViewHtmlBuilder;
 import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
-import lombok.Setter;
 import org.eclipse.jetty.server.Request;
 
 import javax.servlet.ServletException;
@@ -11,10 +10,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Setter
+/**
+ * The HTTP handler used to display the details of a given message in the mail queue.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex}.
+ */
 public class MailDetailHandler extends BaseHandler {
 
+    // instance fields
+
     private final MailMessageViewHtmlBuilder mailMessageViewHtmlBuilder = new MailMessageViewHtmlBuilder();
+
+    // constructors
 
     public MailDetailHandler(MailQueue mailQueue) {
         setMailQueue(mailQueue);

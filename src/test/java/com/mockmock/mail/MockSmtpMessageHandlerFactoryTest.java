@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-public class MockMockMessageHandlerFactoryTest {
+public class MockSmtpMessageHandlerFactoryTest {
 
     @Test
     public void create_valid() {
-        MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
-        Assertions.assertInstanceOf(MockMockMessageHandlerFactory.MockMockHandler.class, factory.create(Mockito.mock(MessageContext.class)));
+        MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(new MailQueue(), new Settings());
+        Assertions.assertInstanceOf(MockSmtpMessageHandlerFactory.MockMockHandler.class, factory.create(Mockito.mock(MessageContext.class)));
     }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -35,9 +35,9 @@ public class MockMockMessageHandlerFactoryTest {
 
         @Test
         public void from_valid() {
-            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
-            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
-                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+            MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(new MailQueue(), new Settings());
+            MockSmtpMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockSmtpMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
 
             String fromAddress = "sender@example.com";
             mockMockHandler.from(fromAddress);
@@ -46,9 +46,9 @@ public class MockMockMessageHandlerFactoryTest {
 
         @Test
         public void to_valid() {
-            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
-            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
-                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+            MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(new MailQueue(), new Settings());
+            MockSmtpMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockSmtpMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
 
             String toAddress = "recipient@example.com";
             mockMockHandler.recipient(toAddress);
@@ -67,9 +67,9 @@ public class MockMockMessageHandlerFactoryTest {
             MailQueue mailQueue = new MailQueue();
             mailQueue.setSettings(settings);
 
-            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(mailQueue, settings);
-            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
-                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+            MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(mailQueue, settings);
+            MockSmtpMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockSmtpMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
 
             mockMockHandler.from(fromAddress);
             mockMockHandler.recipient(toAddress);
@@ -88,9 +88,9 @@ public class MockMockMessageHandlerFactoryTest {
 
         @Test
         public void data_treatInputStreamContentAsPlainTextOnly() throws IOException {
-            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
-            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
-                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+            MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(new MailQueue(), new Settings());
+            MockSmtpMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockSmtpMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
 
             // test the message handler:
             String expectedMessageBodyText = "message body";
@@ -112,9 +112,9 @@ public class MockMockMessageHandlerFactoryTest {
                 boolean expectedBodyTextSet,
                 boolean expectedBodyHtmlSet
         ) throws IOException {
-            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
-            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
-                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+            MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(new MailQueue(), new Settings());
+            MockSmtpMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockSmtpMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
 
             // test the message handler:
             String expectedMessageBodyText = "message body";
@@ -149,9 +149,9 @@ public class MockMockMessageHandlerFactoryTest {
                 String expectedAttachmentContentType,
                 String expectedAttachmentFilename
         ) throws IOException {
-            MockMockMessageHandlerFactory factory = new MockMockMessageHandlerFactory(new MailQueue(), new Settings());
-            MockMockMessageHandlerFactory.MockMockHandler mockMockHandler
-                    = (MockMockMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
+            MockSmtpMessageHandlerFactory factory = new MockSmtpMessageHandlerFactory(new MailQueue(), new Settings());
+            MockSmtpMessageHandlerFactory.MockMockHandler mockMockHandler
+                    = (MockSmtpMessageHandlerFactory.MockMockHandler) factory.create(Mockito.mock(MessageContext.class));
 
             try (MockedConstruction<MimeMessage> mockMimeMessageService = Mockito.mockConstruction(MimeMessage.class, (mockObject, context) -> {
                 //  - intercept the construction of new MimeMessage objects so we get valid test cases

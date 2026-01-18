@@ -9,7 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The HTTP handler used to display a message from the mail queue as raw text, including all headers and attachments.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex/raw}.
+ */
 public class ViewRawMessageHandler extends BaseHandler {
+
+    // constructors
 
     public ViewRawMessageHandler(MailQueue mailQueue) {
         setMailQueue(mailQueue);

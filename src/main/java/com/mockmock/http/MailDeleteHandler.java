@@ -11,7 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * The HTTP handler used to delete a given message from the mail queue.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /delete/:mailIndex}.
+ */
 public class MailDeleteHandler extends BaseHandler {
+
+	// constructors
 
 	public MailDeleteHandler(MailQueue mailQueue) {
 		setMailQueue(mailQueue);

@@ -21,12 +21,12 @@ import java.util.Properties;
 import java.util.UUID;
 
 @Slf4j
-public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
+public class MockSmtpMessageHandlerFactory implements MessageHandlerFactory {
 
     private final MailQueue mailQueue;
 	private final Settings settings;
 
-    public MockMockMessageHandlerFactory(MailQueue mailQueue, Settings settings) {
+    public MockSmtpMessageHandlerFactory(MailQueue mailQueue, Settings settings) {
         this.mailQueue = mailQueue;
         this.settings = settings;
     }

@@ -1,7 +1,7 @@
 package com.mockmock;
 
 import com.mockmock.mail.MailQueue;
-import com.mockmock.mail.MockMockMessageHandlerFactory;
+import com.mockmock.mail.MockSmtpMessageHandlerFactory;
 import com.mockmock.server.DemoDataLoader;
 import com.mockmock.server.HttpServer;
 import com.mockmock.server.SmtpServer;
@@ -84,7 +84,7 @@ public class Main {
         try {
             smtpServer = new SmtpServer();
             smtpServer.setSettings(settings);
-            smtpServer.setHandlerFactory(new MockMockMessageHandlerFactory(mailQueue, settings));
+            smtpServer.setHandlerFactory(new MockSmtpMessageHandlerFactory(mailQueue, settings));
             smtpServer.start();
             if (settings.isLoadDemoData()) {
                 new DemoDataLoader(settings).load();

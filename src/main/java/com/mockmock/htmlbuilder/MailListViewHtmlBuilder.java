@@ -6,8 +6,12 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import javax.mail.Message;
 
+/**
+ * Builds the web UI page displaying the list of received mail messages.
+ */
 public class MailListViewHtmlBuilder extends WebUiHtmlBuilder {
 
+    /** Builds the page showing list of received mail messages, including its headers and footers. **/
     public String buildMailListView(MailQueue mailQueue) {
         // build the output here
         StringBuilder stringBuilder = new StringBuilder();
@@ -52,6 +56,7 @@ public class MailListViewHtmlBuilder extends WebUiHtmlBuilder {
         return stringBuilder.toString();
     }
 
+    /** Builds a single row of the list, showing the details and links for a single received mail message. **/
     private String buildMailRow(MockMail mail, int index) {
         String fromOutput = buildSenderAddress(mail);
         String toOutput = buildRecipientAddress(mail, Message.RecipientType.TO);
