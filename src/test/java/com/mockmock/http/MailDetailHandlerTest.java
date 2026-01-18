@@ -1,9 +1,6 @@
 package com.mockmock.http;
 
 import com.mockmock.Settings;
-import com.mockmock.htmlbuilder.FooterHtmlBuilder;
-import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
-import com.mockmock.htmlbuilder.MailViewHtmlBuilder;
 import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
@@ -14,18 +11,21 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.stream.Stream;
 
 public class MailDetailHandlerTest {
 
     @ParameterizedTest
     @MethodSource("handle_testByPathAndIndex_arguments")
-    public void handle_testByPathAndIndex(String urlPath, boolean expectedHandled) throws ServletException, IOException {
+    public void handle_testByPathAndIndex(String urlPath, boolean expectedHandled, String expectedText) throws ServletException, IOException {
         // make up a mock mail queue
         int numberOfMessagesToGenerate = 5;
         MailQueue mailQueue = new MailQueue();
@@ -40,18 +40,7 @@ public class MailDetailHandlerTest {
         StringWriter responseStringWriter = new StringWriter();
         Mockito.doReturn(new PrintWriter(responseStringWriter)).when(jettyResponse).getWriter();
 
-        MailDetailHandler mailDetailHandler = new MailDetailHandler();
-        mailDetailHandler.setMailQueue(mailQueue);
-        HeaderHtmlBuilder mockHeaderHtmlBuilder = Mockito.mock(HeaderHtmlBuilder.class);
-        Mockito.doReturn("").when(mockHeaderHtmlBuilder).build();
-        mailDetailHandler.setHeaderHtmlBuilder(mockHeaderHtmlBuilder);
-        FooterHtmlBuilder mockFooterHtmlBuilder = Mockito.mock(FooterHtmlBuilder.class);
-        Mockito.doReturn("").when(mockFooterHtmlBuilder).build();
-        mailDetailHandler.setFooterHtmlBuilder(mockFooterHtmlBuilder);
-        MailViewHtmlBuilder mockMailViewHtmlBuilder = Mockito.mock(MailViewHtmlBuilder.class);
-        Mockito.doReturn("Body").when(mockMailViewHtmlBuilder).build();
-        mailDetailHandler.setMailViewHtmlBuilder(mockMailViewHtmlBuilder);
-
+        MailDetailHandler mailDetailHandler = new MailDetailHandler(mailQueue);
         mailDetailHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 
         // see if it was handled correctly
@@ -60,18 +49,18 @@ public class MailDetailHandlerTest {
             Assertions.assertEquals("",  responseStringWriter.toString());
         } else {
             Assertions.assertTrue(jettyRequest.isHandled());
-            Assertions.assertEquals("Body", responseStringWriter.toString());
+            Assertions.assertTrue(responseStringWriter.toString().contains(expectedText));
         }
     }
 
     private static Stream<Arguments> handle_testByPathAndIndex_arguments() {
         return Stream.of(
-                Arguments.of("/invalid/path", false),
-                Arguments.of("/view/0", false),   // indexes start at 1
-                Arguments.of("/view/4", true),    // 4th from the start
-                Arguments.of("/view/-4", true),   // 4th from the end
-                Arguments.of("/view/6", false),   // 6th from the start (out of bounds)
-                Arguments.of("/view/-6", false)   // 6th from the end (out of bounds)
+                Arguments.of("/invalid/path", false, ""),
+                Arguments.of("/view/0", false, ""),               // indexes start at 1
+                Arguments.of("/view/4", true, "<h1>Email 4 "),    // 4th from the start
+                Arguments.of("/view/-4", true, "<h1>Email 2 "),   // 4th from the end
+                Arguments.of("/view/6", false, ""),               // 6th from the start (out of bounds)
+                Arguments.of("/view/-6", false, "")               // 6th from the end (out of bounds)
         );
     }
 
@@ -83,6 +72,15 @@ public class MailDetailHandlerTest {
         mockMail.setSubject("Email " + index);
         mockMail.setBody("Body " + index);
         mockMail.setReceivedTime(System.currentTimeMillis() + index);
+
+        try {
+            MimeMessage mockMimeMessage = Mockito.mock(MimeMessage.class);
+            Mockito.doReturn(new Vector<String>().elements()).when(mockMimeMessage).getMatchingHeaderLines(Mockito.any());
+            mockMail.setMimeMessage(mockMimeMessage);
+        } catch (MessagingException e) {
+            // ignored
+        }
+
         return mockMail;
     }
 }

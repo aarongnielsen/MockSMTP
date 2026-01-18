@@ -1,16 +1,28 @@
 package com.mockmock.http;
 
+import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Service
+/**
+ * The HTTP handler used to display and download attachments.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:messageIndex/attachment/:attachmentIndex}.
+ */
 public class AttachmentHandler extends BaseHandler {
+
+    // constructors
+
+    public AttachmentHandler(MailQueue mailQueue) {
+        setMailQueue(mailQueue);
+    }
+
+    // methods implemented for BaseHandler
 
     @Override
     protected String getUrlPathPattern() {
@@ -50,11 +62,6 @@ public class AttachmentHandler extends BaseHandler {
         request.setHandled(true);
     }
 
-    /**
-     * Returns the mail id if it is part of the target
-     * @param target String
-     * @return int
-     */
     private int getMailIndex(String target) {
         return getRegexMatchedGroup(target, 1);
     }

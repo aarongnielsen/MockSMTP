@@ -1,16 +1,29 @@
 package com.mockmock.http;
 
+import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Service
+/**
+ * The HTTP handler used to display the body of a given message in the mail queue.
+ * Note that this can be used to display either plain-text or HTML contents.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex/body}.
+ */
 public class ViewMailBodyHandler extends BaseHandler {
+
+    // constructors
+
+    public ViewMailBodyHandler(MailQueue mailQueue) {
+        setMailQueue(mailQueue);
+    }
+
+    // methods implemented for BaseHandler
 
     @Override
     protected String getUrlPathPattern() {

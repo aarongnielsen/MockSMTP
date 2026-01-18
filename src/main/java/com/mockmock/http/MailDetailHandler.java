@@ -1,31 +1,33 @@
 package com.mockmock.http;
 
-import com.mockmock.htmlbuilder.FooterHtmlBuilder;
-import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
-import com.mockmock.htmlbuilder.MailViewHtmlBuilder;
+import com.mockmock.htmlbuilder.MailMessageViewHtmlBuilder;
+import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
-import lombok.Setter;
 import org.eclipse.jetty.server.Request;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Service
-@Setter
+/**
+ * The HTTP handler used to display the details of a given message in the mail queue.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex}.
+ */
 public class MailDetailHandler extends BaseHandler {
 
-    @Autowired
-    private HeaderHtmlBuilder headerHtmlBuilder;
+    // instance fields
 
-    @Autowired
-    private FooterHtmlBuilder footerHtmlBuilder;
+    private final MailMessageViewHtmlBuilder mailMessageViewHtmlBuilder = new MailMessageViewHtmlBuilder();
 
-    @Autowired
-    private MailViewHtmlBuilder mailViewHtmlBuilder;
+    // constructors
+
+    public MailDetailHandler(MailQueue mailQueue) {
+        setMailQueue(mailQueue);
+    }
+
+    // methods implemented for BaseHandler
 
     @Override
     protected String getUrlPathPattern() {
@@ -52,15 +54,8 @@ public class MailDetailHandler extends BaseHandler {
 
         setDefaultResponseOptions(response);
 
-        String header = headerHtmlBuilder.build();
-
-        mailViewHtmlBuilder.setMockMail(mockMail);
-        mailViewHtmlBuilder.setMailIndex(mailIndex);
-        String body = mailViewHtmlBuilder.build();
-
-        String footer = footerHtmlBuilder.build();
-
-        response.getWriter().print(header + body + footer);
+        String mailDetailHTML = mailMessageViewHtmlBuilder.buildMailMessageView(mockMail, mailIndex);
+        response.getWriter().print(mailDetailHTML);
 
         request.setHandled(true);
     }

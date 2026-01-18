@@ -41,9 +41,7 @@ public class ViewHeadersHandlerTest {
         StringWriter responseStringWriter = new StringWriter();
         Mockito.doReturn(new PrintWriter(responseStringWriter)).when(jettyResponse).getWriter();
 
-        ViewHeadersHandler viewHeadersHandler = new ViewHeadersHandler();
-        viewHeadersHandler.setMailQueue(mailQueue);
-
+        ViewHeadersHandler viewHeadersHandler = new ViewHeadersHandler(mailQueue);
         viewHeadersHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 
         // see if it was handled correctly

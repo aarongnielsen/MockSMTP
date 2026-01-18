@@ -1,16 +1,28 @@
 package com.mockmock.http;
 
+import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Service
+/**
+ * The HTTP handler used to display a message from the mail queue as raw text, including all headers and attachments.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex/raw}.
+ */
 public class ViewRawMessageHandler extends BaseHandler {
+
+    // constructors
+
+    public ViewRawMessageHandler(MailQueue mailQueue) {
+        setMailQueue(mailQueue);
+    }
+
+    // methods implemented for BaseHandler
 
     @Override
     protected String getUrlPathPattern() {

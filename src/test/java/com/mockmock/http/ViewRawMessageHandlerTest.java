@@ -36,8 +36,7 @@ public class ViewRawMessageHandlerTest {
         Response jettyResponse = Mockito.mock(Response.class);
         StringWriter responseStringWriter = new StringWriter();
         Mockito.doReturn(new PrintWriter(responseStringWriter)).when(jettyResponse).getWriter();
-        ViewRawMessageHandler viewRawMessageHandler = new ViewRawMessageHandler();
-        viewRawMessageHandler.setMailQueue(mailQueue);
+        ViewRawMessageHandler viewRawMessageHandler = new ViewRawMessageHandler(mailQueue);
         viewRawMessageHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 
         // see if it was handled correctly

@@ -11,16 +11,31 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A helper class to load demo data into the application at start-up time,
+ * if specified in the {@link com.mockmock.Settings#setLoadDemoData(boolean) command-line options}.
+ * <p>
+ * The data is read from the {@code demodata/} folder in classpath resources.
+ * Note that demo data is specified as entire email messages in individual files,
+ * and each one is loaded by connecting to the SMTP server directly.
+ */
 @RequiredArgsConstructor
 @Slf4j
 public class DemoDataLoader {
 
+    // instance fields
+
+    /** The configuration of the application, used to locate the SMTP server. **/
     @NonNull
     private Settings settings;
 
+    // public methods
+
+    /** Loads the demo data from classpath resources. **/
     public void load() {
-        // build email message to send
+        // read email messages from classpath resources (src/main/resources)
         final String resourceBasePath = "/demodata/";
+
         for (int i = 1; i <= 3; i++) {
             // build a message to send:
             StringBuilder stringBuilder = new StringBuilder();

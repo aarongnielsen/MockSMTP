@@ -34,8 +34,8 @@ public class DeleteHandlerTest {
         Request jettyRequest = new Request(null, null);
         Response jettyResponse = Mockito.mock(Response.class);
         Mockito.doReturn(new PrintWriter(new StringWriter())).when(jettyResponse).getWriter();
-        DeleteHandler deleteHandler = new DeleteHandler();
-        deleteHandler.setMailQueue(mailQueue);
+
+        DeleteHandler deleteHandler = new DeleteHandler(mailQueue);
         deleteHandler.handle(targetUrlPath, jettyRequest, jettyRequest, jettyResponse);
 
         if (!expectedHandled) {

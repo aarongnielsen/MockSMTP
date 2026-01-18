@@ -1,8 +1,8 @@
 package com.mockmock.http;
 
+import com.mockmock.mail.MailQueue;
 import com.mockmock.mail.MockMail;
 import org.eclipse.jetty.server.Request;
-import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -14,8 +14,20 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-@Service
+/**
+ * The HTTP handler used to display the headers of a given message in the mail queue.
+ * <p>
+ * The user invokes this handler by requesting a URL of the form: {@code /view/:mailIndex/headers}.
+ */
 public class ViewHeadersHandler extends BaseHandler {
+
+    // constructors
+
+    public ViewHeadersHandler(MailQueue mailQueue) {
+        setMailQueue(mailQueue);
+    }
+
+    // methods implemented for BaseHandler
 
     @Override
     protected String getUrlPathPattern() {

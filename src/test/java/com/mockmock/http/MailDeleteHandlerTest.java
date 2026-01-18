@@ -35,8 +35,8 @@ public class MailDeleteHandlerTest {
         Request jettyRequest = new Request(null, null);
         Response jettyResponse = Mockito.mock(Response.class);
         Mockito.doReturn(new PrintWriter(new StringWriter())).when(jettyResponse).getWriter();
-        MailDeleteHandler mailDeleteHandler = new MailDeleteHandler();
-        mailDeleteHandler.setMailQueue(mailQueue);
+
+        MailDeleteHandler mailDeleteHandler = new MailDeleteHandler(mailQueue);
         mailDeleteHandler.handle(urlPath, jettyRequest, jettyRequest, jettyResponse);
 
         // see if it was handled correctly

@@ -3,24 +3,31 @@ package com.mockmock.mail;
 import com.mockmock.Settings;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-@Service
+/** The list of messages that have been received. **/
 @Getter
 public class MailQueue  {
 
-    // internal list is declared as an ArrayList rather than as an interface type,
-    // since we want to use the internal trimToSize() method when the list is truncated
-    private final ArrayList<MockMail> mailQueue = new ArrayList<>();
+    // instance fields
 
-    @Autowired
+    /** The list of messages in the queue. **/
+    private final ArrayList<MockMail> mailQueue = new ArrayList<>();  // declared as an ArrayList rather than as an interface type,
+                                                                      // to use internal trimToSize() method when list is truncated
+
+    /** The application settings, used to define the maximum number of messages that can be received. **/
     @Setter
     private Settings settings;
+
+    // public methods
+
+    /** Returns the number of messages in the queue. **/
+    public int size() {
+        return mailQueue.size();
+    }
 
     /**
      * Adds a mail message to the queue.
@@ -41,6 +48,10 @@ public class MailQueue  {
         }
     }
 
+    /**
+     * Returns the 1-indexed location in this queue of the mail message with the given ID.
+     * If no such message exists, this method returns zero.
+     */
     public int findById(UUID id) {
         for (int implIndex = 0; implIndex < mailQueue.size(); implIndex++) {
             MockMail mockMail = mailQueue.get(implIndex);
@@ -52,9 +63,8 @@ public class MailQueue  {
     }
 
     /**
-     * Returns the MockMail that belongs to the given ID
-     * @param id The id of the mail that needs to be retrieved
-     * @return Returns the MockMail when found or null otherwise
+     * Returns the mail message with the given ID.
+     * If no such message exists, this method returns {@code null}.
      */
     public MockMail getById(UUID id) {
         int apiIndex = findById(id);
@@ -62,6 +72,10 @@ public class MailQueue  {
         return mailQueue.get(implIndex);
     }
 
+    /**
+     * Returns the message at the given 1-indexed or -1-indexed location in the mail queue.
+     * If the index is not valid, this method returns {@code null}.
+     */
     public MockMail getByIndex(int index) {
         try {
             int implIndex = getImplIndex(index);
@@ -71,14 +85,18 @@ public class MailQueue  {
         }
     }
 
-    /**
-     * Removes all mail in the queue
-     */
+    /** Removes all messages in the queue. **/
     public void emptyQueue() {
         mailQueue.clear();
         mailQueue.trimToSize();
     }
 
+    /**
+     * Deletes the message at the given 1-indexed or -1-indexed location in the mail queue.
+     *
+     * @return {@code true} if the message was found and deleted;
+     *         {@code false} if the index is invalid and no message was deleted.
+     */
     public boolean deleteByIndex(int index) {
         try {
             int implIndex = getImplIndex(index);
@@ -120,7 +138,7 @@ public class MailQueue  {
 
     /** Trims the mail queue so that the number of messages does not exceed the maximum setting. **/
     private void trimQueue() {
-        int maxMailQueueSize = settings.getMaxMailQueueSize();
+        int maxMailQueueSize = (settings != null ? settings.getMaxMailQueueSize() : 0);
         if (maxMailQueueSize <= 0) {
             return;
         }

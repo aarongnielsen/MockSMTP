@@ -4,50 +4,66 @@ import com.mockmock.server.HttpServer;
 import com.mockmock.server.SmtpServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.BeanFactory;
 
 public class MainTest {
 
     @Test
     public void run_defaultOptions() {
-        BeanFactory mockBeanFactory = Mockito.mock(BeanFactory.class);
-        Mockito.when(mockBeanFactory.getBean(Mockito.eq(SmtpServer.class))).thenReturn(Mockito.mock(SmtpServer.class));
-        Mockito.when(mockBeanFactory.getBean(Mockito.eq(HttpServer.class))).thenReturn(Mockito.mock(HttpServer.class));
-        Main mainApplication = new Main(mockBeanFactory, new Settings());
-        mainApplication.run();
-        Assertions.assertEquals(0, mainApplication.getExitCode());
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run();
+        mainApplication.stopServers();
+        Assertions.assertEquals(Main.ExitCodes.STARTUP_OK, exitCode);
     }
 
     @Test
     public void run_invalidOptions() {
-        Main mainApplication = new Main(Mockito.mock(BeanFactory.class), new Settings());
-        mainApplication.run("--invalid-option");
-        Assertions.assertEquals(1, mainApplication.getExitCode());
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run("--invalid-option");
+        mainApplication.stopServers();
+        Assertions.assertEquals(Main.ExitCodes.CANNOT_PARSE_COMMAND_LINE, exitCode);
     }
 
     @Test
     public void run_showUsageAndExit() {
-        Main mainApplication = new Main(Mockito.mock(BeanFactory.class), new Settings());
-        mainApplication.run("-?");
-        Assertions.assertEquals(-1, mainApplication.getExitCode());
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run("-?");
+        mainApplication.stopServers();
+        Assertions.assertEquals(Main.ExitCodes.EXIT_AFTER_SHOW_USAGE, exitCode);
     }
 
     @Test
     public void run_smtpServerCannotStart() {
-        BeanFactory mockBeanFactory = Mockito.mock(BeanFactory.class);
-        Main mainApplication = new Main(mockBeanFactory, new Settings());
-        mainApplication.run();
-        Assertions.assertEquals(2, mainApplication.getExitCode());
+        try (MockedConstruction<SmtpServer> mockedConstruction = Mockito.mockConstruction(SmtpServer.class, (mockObject, context) -> {
+            throw new RuntimeException("constructor failed");
+        })) {
+            Main mainApplication = new Main();
+            int exitCode = mainApplication.run();
+            mainApplication.stopServers();
+            Assertions.assertEquals(Main.ExitCodes.CANNOT_START_SMTP_SERVER, exitCode);
+        }
     }
 
     @Test
     public void run_httpServerCannotStart() {
-        BeanFactory mockBeanFactory = Mockito.mock(BeanFactory.class);
-        Mockito.when(mockBeanFactory.getBean(Mockito.eq(SmtpServer.class))).thenReturn(Mockito.mock(SmtpServer.class));
-        Main mainApplication = new Main(mockBeanFactory, new Settings());
-        mainApplication.run();
-        Assertions.assertEquals(3, mainApplication.getExitCode());
+        try (MockedConstruction<HttpServer> mockedConstruction = Mockito.mockConstruction(HttpServer.class, (mockObject, context) -> {
+            throw new RuntimeException("constructor failed");
+        })) {
+            Main mainApplication = new Main();
+            int exitCode = mainApplication.run();
+            mainApplication.stopServers();
+            Assertions.assertEquals(Main.ExitCodes.CANNOT_START_HTTP_SERVER, exitCode);
+        }
+    }
+
+    @Test
+    public void run_loadDemoData() {
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run("--demo");
+        mainApplication.stopServers();
+        Assertions.assertEquals(Main.ExitCodes.STARTUP_OK, exitCode);
+        Assertions.assertEquals(3, mainApplication.getMailQueue().size());
     }
 
 }

@@ -30,8 +30,8 @@ public class DemoDataLoaderTest {
 
         SmtpServer smtpServer = new SmtpServer();
         smtpServer.setSettings(settings);
-        MockMockMessageHandlerFactory messageHandlerFactory = Mockito.mock(MockMockMessageHandlerFactory.class);
-        MockMockMessageHandlerFactory.MockMockHandler messageHandler = Mockito.mock(MockMockMessageHandlerFactory.MockMockHandler.class);
+        MockSmtpMessageHandlerFactory messageHandlerFactory = Mockito.mock(MockSmtpMessageHandlerFactory.class);
+        MockSmtpMessageHandlerFactory.MockMockHandler messageHandler = Mockito.mock(MockSmtpMessageHandlerFactory.MockMockHandler.class);
         Mockito.doReturn(messageHandler).when(messageHandlerFactory).create(Mockito.any(MessageContext.class));
         smtpServer.setHandlerFactory(messageHandlerFactory);
         smtpServer.start();

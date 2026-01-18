@@ -1,8 +1,7 @@
 package com.mockmock.server;
 
-import com.mockmock.Settings;
 import com.mockmock.http.*;
-import lombok.AccessLevel;
+import com.mockmock.mail.MailQueue;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
@@ -11,43 +10,32 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-@Setter
+/**
+ * A server that listens for HTTP connections and generates the user-facing web user interface.
+ */
 @Slf4j
-public class HttpServer implements com.mockmock.server.Server {
+public class HttpServer extends AbstractServer {
 
-    @Autowired
-    private IndexHandler indexHandler;
+    // instance fields
 
-    @Autowired
-    private MailDetailHandler mailDetailHandler;
+    /** The mail queue to be displayed in the web UI. **/
+    @Setter
+    private MailQueue mailQueue;
 
-    @Autowired
-    private ViewMailBodyHandler mailDetailHtmlHandler;
-
-    @Autowired
-    private MailDeleteHandler mailDeleteHandler;
-
-    @Autowired
-    private DeleteHandler deleteHandler;
-
-    @Autowired
-    private AttachmentHandler attachmentHandler;
-
-    @Autowired
-    private ViewRawMessageHandler viewRawMessageHandler;
-
-    @Autowired
-    private ViewHeadersHandler viewHeadersHandler;
-
-    @Autowired
-    private Settings settings;
-
-    @Setter(AccessLevel.NONE)
+    /** The HTTP server that manages connections and generates the web UI pages for responses. **/
     private Server httpServerImpl;
+
+    // public methods
+
+    /** Waits on the server thread until the application is closed. **/
+    public void joinThread() {
+        try {
+            httpServerImpl.join();
+        } catch (InterruptedException ignored) { }
+    }
+
+    // methods implemented for AbstractServer
 
     @Override
     public void start() {
@@ -60,14 +48,14 @@ public class HttpServer implements com.mockmock.server.Server {
         contextHandler.setHandler(resourceHandler);
 
         Handler[] handlers = {
-			this.indexHandler,
-			this.mailDetailHandler,
-			this.mailDetailHtmlHandler,
-			this.mailDeleteHandler,
-			this.deleteHandler,
-            this.attachmentHandler,
-            this.viewRawMessageHandler,
-            this.viewHeadersHandler,
+            new IndexHandler(mailQueue),
+            new MailDetailHandler(mailQueue),
+            new MailDeleteHandler(mailQueue),
+            new DeleteHandler(mailQueue),
+            new AttachmentHandler(mailQueue),
+            new ViewMailBodyHandler(mailQueue),
+            new ViewHeadersHandler(mailQueue),
+            new ViewRawMessageHandler(mailQueue),
             contextHandler
         };
         HandlerList handlerList = new HandlerList();

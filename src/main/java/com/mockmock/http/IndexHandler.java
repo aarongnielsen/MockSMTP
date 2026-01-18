@@ -1,30 +1,32 @@
 package com.mockmock.http;
 
-import com.mockmock.htmlbuilder.FooterHtmlBuilder;
-import com.mockmock.htmlbuilder.HeaderHtmlBuilder;
-import com.mockmock.htmlbuilder.MailListHtmlBuilder;
-import lombok.Setter;
+import com.mockmock.htmlbuilder.MailListViewHtmlBuilder;
+import com.mockmock.mail.MailQueue;
 import org.eclipse.jetty.server.Request;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Service
-@Setter
+/**
+ * The HTTP handler used to display the list of messages received, the default view of the application.
+ * <p>
+ * The user invokes this handler by requesting the URL {@code /}.
+ */
 public class IndexHandler extends BaseHandler {
 
-    @Autowired
-    private HeaderHtmlBuilder headerHtmlBuilder;
+    // instance fields
 
-    @Autowired
-    private FooterHtmlBuilder footerHtmlBuilder;
+    private final MailListViewHtmlBuilder mailListViewHtmlBuilder = new MailListViewHtmlBuilder();
 
-    @Autowired
-    private MailListHtmlBuilder mailListHtmlBuilder;
+    // constructors
+
+    public IndexHandler(MailQueue mailQueue) {
+        setMailQueue(mailQueue);
+    }
+
+    // methods implemented for BaseHandler
 
     @Override
     protected String getUrlPathPattern() {
@@ -40,16 +42,8 @@ public class IndexHandler extends BaseHandler {
         }
 
         setDefaultResponseOptions(response);
-
-        String header = headerHtmlBuilder.build();
-
-        mailListHtmlBuilder.setMailQueue(mailQueue.getMailQueue());
-        String body = mailListHtmlBuilder.build();
-
-        String footer = footerHtmlBuilder.build();
-
-        response.getWriter().print(header + body + footer);
-
+        String mailListHTML = mailListViewHtmlBuilder.buildMailListView(mailQueue);
+        response.getWriter().print(mailListHTML);
         request.setHandled(true);
     }
 
