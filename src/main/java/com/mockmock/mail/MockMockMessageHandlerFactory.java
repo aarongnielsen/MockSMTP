@@ -3,8 +3,6 @@ package com.mockmock.mail;
 import com.mockmock.Settings;
 import com.mockmock.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.MessageHandlerFactory;
@@ -15,19 +13,19 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.Properties;
 import java.util.UUID;
 
-@Service
 @Slf4j
 public class MockMockMessageHandlerFactory implements MessageHandlerFactory {
 
     private final MailQueue mailQueue;
 	private final Settings settings;
 
-    @Autowired
     public MockMockMessageHandlerFactory(MailQueue mailQueue, Settings settings) {
         this.mailQueue = mailQueue;
         this.settings = settings;

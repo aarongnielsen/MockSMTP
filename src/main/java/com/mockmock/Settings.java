@@ -2,17 +2,15 @@ package com.mockmock;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Service
+@Command(name = "MockSMTP", description = "MockSMTP is a mock server for testing outgoing emails.")
 @Getter
 @Setter
-@Command(name = "MockSMTP", description = "MockSMTP is a mock server for testing outgoing emails.")
 public class Settings {
 
     /** The default port on which MockSMTP will listen for SMTP connections (default is 25). **/

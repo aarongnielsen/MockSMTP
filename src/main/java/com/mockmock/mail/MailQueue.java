@@ -3,14 +3,11 @@ package com.mockmock.mail;
 import com.mockmock.Settings;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
-@Service
 @Getter
 public class MailQueue  {
 
@@ -18,7 +15,6 @@ public class MailQueue  {
     // since we want to use the internal trimToSize() method when the list is truncated
     private final ArrayList<MockMail> mailQueue = new ArrayList<>();
 
-    @Autowired
     @Setter
     private Settings settings;
 

@@ -69,4 +69,10 @@ public class HttpServer implements com.mockmock.server.Server {
         }
     }
 
+    public void joinThread() {
+        try {
+            httpServerImpl.join();
+        } catch (InterruptedException ignored) { }
+    }
+
 }

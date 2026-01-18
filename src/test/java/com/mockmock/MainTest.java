@@ -11,26 +11,26 @@ public class MainTest {
 
     @Test
     public void run_defaultOptions() {
-        Main mainApplication = new Main(new Settings());
-        mainApplication.run();
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run();
         mainApplication.stopServers();
-        Assertions.assertEquals(0, mainApplication.getExitCode());
+        Assertions.assertEquals(Main.ExitCodes.STARTUP_OK, exitCode);
     }
 
     @Test
     public void run_invalidOptions() {
-        Main mainApplication = new Main(new Settings());
-        mainApplication.run("--invalid-option");
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run("--invalid-option");
         mainApplication.stopServers();
-        Assertions.assertEquals(1, mainApplication.getExitCode());
+        Assertions.assertEquals(Main.ExitCodes.CANNOT_PARSE_COMMAND_LINE, exitCode);
     }
 
     @Test
     public void run_showUsageAndExit() {
-        Main mainApplication = new Main(new Settings());
-        mainApplication.run("-?");
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run("-?");
         mainApplication.stopServers();
-        Assertions.assertEquals(-1, mainApplication.getExitCode());
+        Assertions.assertEquals(Main.ExitCodes.EXIT_AFTER_SHOW_USAGE, exitCode);
     }
 
     @Test
@@ -38,11 +38,11 @@ public class MainTest {
         try (MockedConstruction<SmtpServer> mockedConstruction = Mockito.mockConstruction(SmtpServer.class, (mockObject, context) -> {
             throw new RuntimeException("constructor failed");
         })) {
-            Main mainApplication = new Main(new Settings());
-            mainApplication.run();
+            Main mainApplication = new Main();
+            int exitCode = mainApplication.run();
             mainApplication.stopServers();
-            Assertions.assertEquals(2, mainApplication.getExitCode());
-        };
+            Assertions.assertEquals(Main.ExitCodes.CANNOT_START_SMTP_SERVER, exitCode);
+        }
     }
 
     @Test
@@ -50,11 +50,20 @@ public class MainTest {
         try (MockedConstruction<HttpServer> mockedConstruction = Mockito.mockConstruction(HttpServer.class, (mockObject, context) -> {
             throw new RuntimeException("constructor failed");
         })) {
-            Main mainApplication = new Main(new Settings());
-            mainApplication.run();
+            Main mainApplication = new Main();
+            int exitCode = mainApplication.run();
             mainApplication.stopServers();
-            Assertions.assertEquals(3, mainApplication.getExitCode());
-        };
+            Assertions.assertEquals(Main.ExitCodes.CANNOT_START_HTTP_SERVER, exitCode);
+        }
+    }
+
+    @Test
+    public void run_loadDemoData() {
+        Main mainApplication = new Main();
+        int exitCode = mainApplication.run("--demo");
+        mainApplication.stopServers();
+        Assertions.assertEquals(Main.ExitCodes.STARTUP_OK, exitCode);
+        Assertions.assertEquals(3, mainApplication.getMailQueue().size());
     }
 
 }

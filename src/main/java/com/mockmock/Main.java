@@ -6,84 +6,115 @@ import com.mockmock.server.DemoDataLoader;
 import com.mockmock.server.HttpServer;
 import com.mockmock.server.SmtpServer;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.ExitCodeGenerator;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
-@SpringBootApplication
-@RequiredArgsConstructor
-public class Main implements CommandLineRunner, ExitCodeGenerator {
+/**
+ * The entry point to the application.
+ */
+@Getter
+@Slf4j
+public class Main {
 
+    // constants
+
+    /** The current version number of the application. **/
     public static final String VERSION_NUMBER = "1.6.0-dev";
 
-    // methods overridden for picoCLI:
-    //  - inject Spring bean factory and application settings at construction-time
-    //  - parse command line, tracking exit code so that Spring can use it again
-    //  - if all is well, start servers
+    // constants - exit codes
 
-    @NonNull
-    private Settings appSettings;
+    /**
+     * The exit codes available when running the application from the command line.
+     * If the {@link Main#run(String...)} method returns any value other than {@link ExitCodes#STARTUP_OK zero},
+     * the application will exit.
+     */
+    public static class ExitCodes {
+        public static final int STARTUP_OK = 0;
+        public static final int EXIT_AFTER_SHOW_USAGE = -1;
+        public static final int CANNOT_PARSE_COMMAND_LINE = 1;
+        public static final int CANNOT_START_SMTP_SERVER = 2;
+        public static final int CANNOT_START_HTTP_SERVER = 3;
+    }
 
-    @Getter
+    // instance fields
+
+    /** The application's settings, read from the command line. **/
+    private Settings settings;
+
+    /** The mail queue instance, shared across the various servers. **/
+    private MailQueue mailQueue;
+
+    /** The SMTP server used to receive outgoing emails from other applications. **/
     private SmtpServer smtpServer;
 
-    @Getter
+    /** The HTTP server used to create the web user interface. **/
     private HttpServer httpServer;
 
-    @Getter
-    private int exitCode;
+    // public methods
 
-    @Override
-    public void run(String... args) {
+    /**
+     * Runs the application, creating a configuration from the given command-line arguments.
+     *
+     * @param args command-line arguments.
+     * @return a value from {@link ExitCodes}.
+     */
+    public int run(String... args) {
+        log.info("MockSMTP " + VERSION_NUMBER + " is starting...");
+
         // read command-line parameters into settings bean
-        CommandLine commandLine = new CommandLine(appSettings);
+        settings = new Settings();
+        CommandLine commandLine = new CommandLine(settings);
         try {
             commandLine.parseArgs(args);
 
-            if (appSettings.isShowUsageAndExit()) {
+            if (settings.isShowUsageAndExit()) {
                 commandLine.usage(System.out);
-                exitCode = -1;
+                return ExitCodes.EXIT_AFTER_SHOW_USAGE;
             }
         } catch (Exception x) {
             System.out.println("Error: " + x.getMessage());
             commandLine.usage(System.out);
-            exitCode = 1;
+            return ExitCodes.CANNOT_PARSE_COMMAND_LINE;
         }
 
         // create a queue that will be common to all servers
-        MailQueue mailQueue = new MailQueue();
+        mailQueue = new MailQueue();
 
         // start the servers here
-        if (exitCode == 0) {
-            try {
-                smtpServer = new SmtpServer();
-                smtpServer.setSettings(appSettings);
-                smtpServer.setHandlerFactory(new MockMockMessageHandlerFactory(mailQueue, appSettings));
-                smtpServer.start();
-                if (appSettings.isLoadDemoData()) {
-                    new DemoDataLoader(appSettings).load();
-                }
-            } catch (Exception x) {
-                exitCode = 2;
-                return;
+        try {
+            smtpServer = new SmtpServer();
+            smtpServer.setSettings(settings);
+            smtpServer.setHandlerFactory(new MockMockMessageHandlerFactory(mailQueue, settings));
+            smtpServer.start();
+            if (settings.isLoadDemoData()) {
+                new DemoDataLoader(settings).load();
             }
-
-            try {
-                httpServer = new HttpServer();
-                httpServer.setSettings(appSettings);
-                httpServer.setMailQueue(mailQueue);
-                httpServer.start();
-            } catch (Exception x) {
-                exitCode = 3;
-            }
+        } catch (Exception x) {
+            return ExitCodes.CANNOT_START_SMTP_SERVER;
         }
+
+        try {
+            httpServer = new HttpServer();
+            httpServer.setSettings(settings);
+            httpServer.setMailQueue(mailQueue);
+            httpServer.start();
+        } catch (Exception x) {
+            return ExitCodes.CANNOT_START_HTTP_SERVER;
+        }
+
+        log.info("MockSMTP " + VERSION_NUMBER + " is started");
+        return ExitCodes.STARTUP_OK;
     }
 
+    /** Waits for the server threads to be terminated. **/
+    private void joinThread() {
+        // only join this thread, as the HTTP server is started last
+        httpServer.joinThread();
+    }
+
+    /** Stops the SMTP and HTTP servers. **/
     void stopServers() {
+        // this is mainly called by unit tests and shouldn't be necessary for normal operation
         if (httpServer != null) {
             httpServer.stop();
         }
@@ -94,12 +125,22 @@ public class Main implements CommandLineRunner, ExitCodeGenerator {
 
     // main method
 
+    /**
+     * The entry point to the application.
+     * This method creates a new application object, calls its {@link #run(String...)} method,
+     * and joins the server threads.
+     *
+     * @param args command-line arguments.
+     */
     public static void main(String[] args) {
         // application will exit if an error occurs during command-line initialisation
-        int exitCode = SpringApplication.exit(SpringApplication.run(Main.class, args));
-        if (exitCode != 0) {
+        Main app = new Main();
+        int exitCode = app.run(args);
+        if (exitCode != ExitCodes.STARTUP_OK) {
+            app.stopServers();
             System.exit(exitCode);
         }
+        app.joinThread();
     }
 
 }

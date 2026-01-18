@@ -26,8 +26,6 @@
         <deps.lombok.version>1.18.34</deps.lombok.version>
         <deps.picocli.version>4.7.7</deps.picocli.version>
         <deps.slf4j.version>1.7.2</deps.slf4j.version>
-        <deps.spring.version>4.1.2.RELEASE</deps.spring.version>
-        <deps.springboot.version>2.7.18</deps.springboot.version>
         <deps.subethamail.version>3.1.7</deps.subethamail.version>
 
         <deps.junit.version>5.14.1</deps.junit.version>
@@ -115,25 +113,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>${deps.springboot.version}</version>
-            <exclusions>
-                <!-- unused transitive dependencies -->
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>info.picocli</groupId>
-            <artifactId>picocli-spring-boot-starter</artifactId>
+            <artifactId>picocli</artifactId>
             <version>${deps.picocli.version}</version>
         </dependency>
 
