@@ -12,3 +12,7 @@ body {
 .messages-list .action-link {
     font-style: italic;
 }
+
+.table-column-actions .table-column-sections {
+    min-width: 100px;
+}
